@@ -1,0 +1,22 @@
+# Configuraciones privadas
+.env
+.env.*
+!.env.example
+config/local.php
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Configuración del editor
+.vscode/
+.idea/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+
+# Dependencias
+vendor/
+node_modules/
