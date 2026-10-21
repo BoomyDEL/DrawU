@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -16,14 +16,15 @@
 </head>
 <body>
 
-    <?php include __DIR__ . '/includes/header/header.php'; ?>
 
     <main class="page">
     <header class="intro">
       <p class="eyebrow">Antes de iniciar...</p>
       <h1>Elige a tu<br>nuevo mejor amigo</h1>
     </header>
+
     <div class="wave" aria-hidden="true"></div>
+    
     <section class="picker" aria-live="polite">
       <div class="pet-title"><div id="petName">Mascota 1</div><div class="outline" id="petNameOutline">Mascota 1</div></div>
       <div class="pet-placeholder" id="petDescription">Imagen mascota 1<span>ESTILO MORADO</span></div>
@@ -39,9 +40,6 @@
   </main>
 
 
-    <footer>
-        <?php // include __DIR__ . '/includes/footer.php'; ?>
-    </footer>
 
     <script src="../assets/js/elegir_mascota.js"></script>
     </body>

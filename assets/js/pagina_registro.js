@@ -1,0 +1,3 @@
+const formulario=document.getElementById('formRegistro'),contrasena=document.getElementById('contrasena'),confirmar=document.getElementById('confirmar'),mensaje=document.getElementById('mensaje');
+formulario.addEventListener('submit',function(evento){if(contrasena.value!==confirmar.value){evento.preventDefault();mensaje.style.display='block';confirmar.setCustomValidity('Las contraseñas no coinciden.');confirmar.reportValidity()}else{mensaje.style.display='none';confirmar.setCustomValidity('')}});
+confirmar.addEventListener('input',function(){confirmar.setCustomValidity('');mensaje.style.display='none'});

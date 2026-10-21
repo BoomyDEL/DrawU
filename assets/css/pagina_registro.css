@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+*{box-sizing:border-box} :root{--lila:#a891ff;--lila-claro:#6a4fe0;--gris:#e9e9e9}
+
+body{
+    margin:0;min-height:100vh;font-family:'Poppins',Arial,sans-serif;background:var(--gris)}
+.pantalla{
+    min-height:100vh;display:grid;grid-template-columns:41.3% 58.7%}
+.panel-izquierdo{
+    display:flex;flex-direction:column;align-items:center;position:relative;padding:42px 24px;color:#000}
+.logo{
+    margin:0;font-size:clamp(2.5rem,5vw,3.3rem);line-height:1;font-weight:900;letter-spacing:-2px}
+.imagen-mascotas{
+    position:absolute;top:49%;left:50%;transform:translate(-50%,-50%);width:100%;padding:0 15px;text-align:center;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:700;line-height:.95}
+.panel-derecho{
+    min-height:100vh;background:var(--lila);border-radius:8px 0 0 0;display:flex;justify-content:flex-start;align-items:center;flex-direction:column;padding:42px 32px 36px;color:#fff}
+h1{
+    margin:0;font-size:clamp(2.4rem,5.4vw,3.5rem);font-weight:900;line-height:1.12;text-align:center;color:white;}
+.subtitulo{
+    margin:16px 0 54px;font-size:clamp(1rem,2vw,1.35rem);font-weight:600;text-align:center}
+form{
+    width:min(100%,360px);display:flex;flex-direction:column;gap:29px}
+.campo{
+    height:49px;width:100%;border-radius:20px;background:var(--gris);display:flex;align-items:center;gap:17px;padding:0 20px;color:#242424}
+.campo svg{
+    flex:0 0 27px}.campo input{width:100%;min-width:0;border:0;outline:0;background:transparent;font:400 14px 'Poppins',Arial,sans-serif;color:#222}
+.campo input::placeholder{
+    color:#696969;opacity:1}.campo:focus-within{outline:2px solid rgba(255,255,255,.85);outline-offset:2px}
+.boton{
+    margin-top:1px;height:49px;border:0;border-radius:20px;background:var(--lila-claro);color:white;font:700 14px 'Poppins',Arial,sans-serif;cursor:pointer;transition:background .18s,transform .18s}
+.boton:hover{
+    background:#5a3fd0;transform:translateY(-1px)}.boton:focus-visible,a:focus-visible{outline:3px solid white;outline-offset:3px}
+.cuenta{
+    margin:15px 0 0;display:flex;justify-content:center;flex-wrap:wrap;gap:12px;font-size:14px;font-weight:700;text-align:center}
+.cuenta a{
+    color:#42366f;text-decoration:underline}.cuenta a:last-child{color:#fff}
+.mensaje{
+    display:none;width:min(100%,360px);margin-top:14px;color:#fff;font-size:13px;text-align:center}
+@media(max-width:700px){.pantalla{grid-template-columns:1fr}.panel-izquierdo{min-height:180px;padding:26px 20px}.logo{font-size:2.5rem}.imagen-mascotas{top:72%;font-size:1rem}.panel-derecho{min-height:auto;border-radius:18px 18px 0 0;padding:32px 24px 42px}h1{font-size:clamp(2.2rem,10vw,3rem)}.subtitulo{margin:12px 0 32px}form{gap:18px}}
