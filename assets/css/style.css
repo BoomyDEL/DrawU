@@ -1,0 +1,29 @@
+﻿/* Fuente Monument para tÃ­tulos */
+@font-face {
+    font-family: 'Monument';
+    src: url('../fonts/Monument.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ========================================
+   TIPOGRAFÃA
+======================================== */
+
+/* Fuente predeterminada para textos */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Monument exclusivamente para tÃ­tulos */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Monument', sans-serif;
+    font-weight: 400;
+    color: #8F79F1;
+}
+
+body {
+    margin: 0;
+}
+

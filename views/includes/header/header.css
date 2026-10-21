@@ -1,0 +1,106 @@
+﻿/* Fuente Monument (para que el componente funcione por sí solo) */
+@font-face {
+    font-family: 'Monument';
+    src: url('../../../assets/fonts/Monument.otf') format('opentype');
+    font-display: swap;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+body {
+    margin: 0;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 24px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 132px;
+    height: 28px;
+    background: #e8e8e8;
+    border-radius: 14px;
+    font-family: 'Monument', sans-serif;
+    font-size: 18px;
+    color: #000;
+    text-decoration: none;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+    width: 268px;
+    height: 28px;
+    padding: 0 10px 0 14px;
+    background: #e8e8e8;
+    border-radius: 14px;
+    box-sizing: border-box;
+}
+
+.header-search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+}
+
+.header-search button {
+    display: flex;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #000;
+    cursor: pointer;
+}
+
+.header-coins {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 98px;
+    height: 28px;
+    padding: 0 12px;
+    background: #e8e8e8;
+    border-radius: 14px;
+    box-sizing: border-box;
+    font-size: 13px;
+    color: #000;
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #e8e8e8;
+    color: #000;
+    cursor: pointer;
+    text-decoration: none;
+}
+
