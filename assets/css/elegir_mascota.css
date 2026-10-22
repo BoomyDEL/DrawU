@@ -10,9 +10,9 @@
   .eyebrow { color:var(--purple); transition:color .3s; margin:0 0 14px 0; font-size:15px; font-weight:700; letter-spacing:-.3px; }
   h1 { color:var(--purple); transition:color .3s; margin:0; max-width:560px; font-family:'Monument', sans-serif; font-size:clamp(30px,4vw,43px); line-height:1.05; font-weight:400; letter-spacing:normal; }
   /* Fondo ondulado: imagen según el tema */
-  .wave { position:absolute; z-index:0; left:0; right:0; top:43%; bottom:0; background:url("../Vector 1-morado.png") center top / 100% 100% no-repeat; }
-  .page.tema-aqua .wave { background-image:url("../Vector 1-aqua.png"); }
-  .page.tema-verde .wave { background-image:url("../Vector 1-verde.png"); }
+.wave { position:absolute; z-index:0; left:0; right:0; top:43%; bottom:0; background:url("../img/fondos/Vector 1-morado.png") center top / 100% 100% no-repeat; }
+  .page.tema-aqua .wave { background-image:url("../img/fondos/Vector 1-aqua.png"); }
+  .page.tema-verde .wave { background-image:url("../img/fondos/Vector 1-verde.png"); }
   .picker { position:absolute; z-index:1; top:32.7%; left:50%; transform:translateX(-50%); width:365px; bottom:0; border-radius:76px 76px 0 0; background:var(--purple); transition:background .3s; color:#fff; display:flex; flex-direction:column; align-items:center; padding:39px 24px 18px; }
   .pet-title { text-align:center; font-family:'Monument', sans-serif; font-size:30px; line-height:1.05; font-weight:400; letter-spacing:normal; }
   .pet-title .outline { color:transparent; -webkit-text-stroke:1.8px #fff; }
