@@ -17,6 +17,8 @@
 
     <?php include __DIR__ . '/views/includes/header/header.php'; ?>
 
+    <?php include __DIR__ . '/views/includes/navbar.php'; ?>
+
     <main>
         <section>
             <h1>noyano</h1>
@@ -24,9 +26,9 @@
     </main>
 
     <footer>
-        <?php // include 'views/includes/footer.php'; ?>
     </footer>
 
     <script src="assets/js/main.js"></script>
+    <?php include __DIR__ . '/views/includes/footer.php'; ?>
 </body>
 </html>

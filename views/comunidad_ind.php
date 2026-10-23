@@ -17,11 +17,14 @@
 
     <?php include __DIR__ . '/includes/header/header.php'; ?>
 
+    <?php include __DIR__ . '/includes/navbar.php'; ?>
+
     <main>
         <section>
         </section>
     </main>
 
     <script src="../assets/js/main.js"></script>
+    <?php include __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

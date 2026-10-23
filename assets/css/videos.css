@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box}body{margin:0;font-family:Poppins,Arial,sans-serif;background:#fff;color:#171717;min-height:100vh}
+.onda{position:fixed;bottom:0;left:0;width:100%;height:52%;z-index:-1}.layout{min-height:100vh;max-width:1100px;margin:auto;padding:8px 24px;display:grid;grid-template-columns:minmax(0,1fr) 300px minmax(0,1fr);gap:24px;align-items:center}
+/* Video centrado en la ventana: columnas laterales simétricas */
+.info{grid-column:1;grid-row:1;justify-self:end}
+.video-shell{grid-column:2;grid-row:1;width:300px;justify-self:center}
+/* Acciones centradas verticalmente respecto al video, con espacio a su izquierda */
+.lateral{grid-column:3;grid-row:1;justify-self:start;align-self:center;display:flex;align-items:center;gap:32px;margin-left:16px}
+.acciones{align-self:center!important;padding-bottom:0!important}
+/* Botones para cambiar de video (estilo de elegir_mascota) */
+.cambiar-video{display:flex;flex-direction:column;gap:14px}
+.flecha-video{width:52px;height:52px;border:0;border-radius:50%;background:#aa95fa;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .15s}
+.flecha-video:hover:not(:disabled){background:#9a83f6;transform:scale(1.06)}
+.flecha-video:disabled{opacity:.4;cursor:default}
+.flecha-video svg{width:26px;height:26px}
+
+.wave {
+    position:absolute;
+    z-index:-1; 
+    left:0; 
+    right:0; 
+    top:43%; 
+    bottom:0; 
+    background:url("../img/fondos/Vector 1-morado.png") center top / 100% 100% no-repeat;
+}
+
+.info{align-self:end;margin-bottom:100px;max-width:310px}.usuario{display:flex;align-items:center;gap:13px;margin-bottom:15px;color:white;font-size:12px;font-weight:700}.avatar{width:36px;height:36px;border-radius:50%;background:white;display:grid;place-items:center;color:#222;flex-shrink:0}.avatar svg{width:21px}
+.seguir{border:0;border-radius:22px;background:#a48aff;color:white;padding:8px 22px;font-weight:600;cursor:pointer}.descripcion{font-size:10px;line-height:1.05;overflow-wrap:anywhere}
+.video-shell{margin-bottom:50px;height:min(166vh,555px);min-height:360px;border-radius:9px;overflow:hidden;border:1px solid #777;background:#ddd;position:relative}.video-shell video{width:100%;height:100%;object-fit:cover;display:block;background:#ddd}.placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#555;font-size:13px;pointer-events:none}.placeholder span{display:block;margin-top:8px;font-size:11px}.has-video .placeholder{display:none}
+.sonido{position:absolute;right:10px;bottom:10px;border:0;border-radius:50%;background:#222a;color:white;width:28px;height:28px;cursor:pointer}
+.acciones{display:flex;flex-direction:column;gap:19px;align-self:center;padding-bottom:60px}.accion{border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#111;font:400 13px Poppins,Arial}.accion svg{width:29px;height:29px}.relleno{display:none}.liked .contorno{display:none}.liked .relleno{display:block;color:#e82d5b}
+.comentarios{position:fixed;right:22px;bottom:18px;width:min(390px,calc(100vw - 32px));height:min(420px,75vh);background:#fff;border:1px solid #ddd;border-radius:18px;box-shadow:0 10px 40px #0002;display:none;flex-direction:column;z-index:5;overflow:hidden}.comentarios.abierto{display:flex}.cabecera{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #eee;font-weight:700}.cerrar{border:0;background:transparent;font-size:24px;cursor:pointer}.lista{padding:12px 16px;overflow:auto;flex:1;font-size:13px}.comentario{margin-bottom:13px;overflow-wrap:anywhere}.comentario strong{margin-right:6px}.vacio{color:#777;text-align:center;margin-top:38px}.form-comentario{display:flex;gap:8px;padding:12px;border-top:1px solid #eee}.form-comentario input{min-width:0;flex:1;border:1px solid #ddd;border-radius:22px;padding:10px 13px;font:13px Poppins,Arial}.form-comentario button{border:0;border-radius:20px;background:#a48aff;color:white;padding:0 15px;font-weight:600;cursor:pointer}
+
+@media (max-width: 720px) {
+    .layout {
+    min-height: 100vh;
+    max-width: 1100px;
+    margin: auto;
+    padding: 8px 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+}
+
+/* Video centrado respecto a la ventana */
+.video-shell {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    width: 300px;
+    height: min(96vh, 535px);
+    min-height: 360px;
+    border-radius: 9px;
+    overflow: hidden;
+    border: 1px solid #777;
+    background: #ddd;
+}
+
+/* Acciones alineadas al centro vertical del video */
+.acciones {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+    align-self: center;
+    justify-self: start;
+    padding-bottom: 0;
+}
+
+    /* Mantener la información del usuario en el lado izquierdo */
+    .info {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: end;
+        margin-bottom: 34px;
+        max-width: 310px;
+    }
+
+
+    .usuario {
+        color: #222;
+        flex-wrap: wrap;
+    }
+
+    .descripcion {
+        font-size: 11px;
+    }
+
+    .comentarios {
+        right: 10px;
+        bottom: 10px;
+    }
+}
