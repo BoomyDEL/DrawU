@@ -16,19 +16,19 @@ $navBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : '
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5z"/></svg>
     </a>
 
-    <div class="side-item">
+   <div class="side-item">
         <button class="side-btn" data-menu="menuComunidad" aria-label="Comunidades" title="Comunidades" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01" stroke-width="3"/></svg>
         </button>
         <div class="side-menu" id="menuComunidad" role="menu">
-            <a role="menuitem" href="<?= $navBase ?>crear_comunidad.php">Crear comunidad</a>
+            <button role="menuitem" type="button" id="btnAbrirCrearComunidad">Crear comunidad</button>
             <a role="menuitem" href="<?= $navBase ?>explorar_comunidades.php">Explorar comunidades</a>
         </div>
     </div>
 
-    <button class="side-btn" id="abrirCrearPubli" aria-label="Crear publicación" title="Crear publicación">
+    <a class="side-btn" href="<?= $navBase ?>crear_publi.php" aria-label="Crear publicación" title="Crear publicación">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
-    </button>
+    </a>
 
     <div class="side-item">
         <button class="side-btn" data-menu="menuConfig" aria-label="Configuración" title="Configuración" aria-expanded="false">
@@ -42,21 +42,57 @@ $navBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : '
     </div>
 </nav>
 
-<!-- Modal: Crear nueva publicación -->
-<div class="overlay" id="modalCrearPubli" aria-hidden="true">
-    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="tituloCrearPubli">
+<!-- Modal: Crear nueva comunidad -->
+<div class="overlay" id="modalCrearComunidad" aria-hidden="true">
+    <div class="modal-box modal-crear-comunidad" role="dialog" aria-modal="true" aria-labelledby="tituloCrearComunidad">
         <div class="modal-head">
-            <span id="tituloCrearPubli">Crear nueva publicación</span>
+            <span id="tituloCrearComunidad">Crear nueva comunidad</span>
             <button class="modal-cerrar" data-cerrar aria-label="Cerrar">×</button>
         </div>
-        <div class="modal-body">
-            <svg class="modal-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-            <span class="modal-archivo" id="nombreArchivo"></span>
-            <label class="modal-btn">Seleccionar archivo
-                <input type="file" id="archivoPubli" accept="image/*,video/*" hidden>
-            </label>
-            <a class="modal-btn" href="<?= $navBase ?>crear_publi.php">Crear un aviso de comunidad</a>
-        </div>
+        <form class="modal-body form-crear-comunidad" id="formCrearComunidad">
+            <div class="comunidad-inputs">
+                <input type="text" id="nombreComunidad" placeholder="Nombre de la comunidad" class="input-redondeado-lila" required>
+                <div class="select-wrapper">
+                    <select id="privacidadComunidad" class="input-redondeado-lila" required>
+                        <option value="" disabled selected hidden>Elegir privacidad</option>
+                        <option value="publica">Pública</option>
+                        <option value="privada">Privada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="comunidad-archivos-grid">
+                <div class="caja-subir-archivo">
+                    <span class="label-archivo">Foto de comunidad</span>
+                    <label class="tarjeta-archivo" for="fotoComunidadInput">
+                        <svg class="icono-archivo-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="m21 15-5-5L5 21"/>
+                        </svg>
+                        <span class="preview-nombre" id="nombreFotoComunidad"></span>
+                        <span class="btn-subir-pildora">Seleccionar archivo</span>
+                        <input type="file" id="fotoComunidadInput" accept="image/*" hidden>
+                    </label>
+                </div>
+
+                <div class="caja-subir-archivo">
+                    <span class="label-archivo">Banner de comunidad</span>
+                    <label class="tarjeta-archivo" for="bannerComunidadInput">
+                        <svg class="icono-archivo-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="m21 15-5-5L5 21"/>
+                        </svg>
+                        <span class="preview-nombre" id="nombreBannerComunidad"></span>
+                        <span class="btn-subir-pildora">Seleccionar archivo</span>
+                        <input type="file" id="bannerComunidadInput" accept="image/*" hidden>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="modal-btn-accion">Crear comunidad</button>
+        </form>
     </div>
 </div>
 

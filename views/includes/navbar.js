@@ -27,10 +27,53 @@
         if (e.key === 'Escape') { document.querySelectorAll('.overlay.abierto').forEach(cerrarModal); cerrarMenus(); }
     });
 
-    document.getElementById('abrirCrearPubli').addEventListener('click', () => abrirModal('modalCrearPubli'));
-    document.getElementById('archivoPubli').addEventListener('change', e => {
-        document.getElementById('nombreArchivo').textContent = e.target.files[0]?.name || '';
-    });
+    const btnCrearComunidad = document.getElementById('btnAbrirCrearComunidad');
+    if (btnCrearComunidad) {
+        btnCrearComunidad.addEventListener('click', () => abrirModal('modalCrearComunidad'));
+    }
+
+    const inputFotoCom = document.getElementById('fotoComunidadInput');
+    const inputBannerCom = document.getElementById('bannerComunidadInput');
+    if (inputFotoCom) {
+        inputFotoCom.addEventListener('change', e => {
+            const nom = document.getElementById('nombreFotoComunidad');
+            if (nom) nom.textContent = e.target.files[0]?.name || '';
+        });
+    }
+    if (inputBannerCom) {
+        inputBannerCom.addEventListener('change', e => {
+            const nom = document.getElementById('nombreBannerComunidad');
+            if (nom) nom.textContent = e.target.files[0]?.name || '';
+        });
+    }
+
+    const formComunidad = document.getElementById('formCrearComunidad');
+    if (formComunidad) {
+        formComunidad.addEventListener('submit', e => {
+            e.preventDefault();
+            const nom = document.getElementById('nombreComunidad')?.value.trim();
+            const priv = document.getElementById('privacidadComunidad')?.value;
+            alert(`¡Comunidad "${nom}" (${priv}) creada exitosamente!`);
+            formComunidad.reset();
+            const nf = document.getElementById('nombreFotoComunidad');
+            const nb = document.getElementById('nombreBannerComunidad');
+            if (nf) nf.textContent = '';
+            if (nb) nb.textContent = '';
+            cerrarModal(document.getElementById('modalCrearComunidad'));
+        });
+    }
+
+    const btnCrearPubli = document.getElementById('abrirCrearPubli');
+    if (btnCrearPubli) {
+        btnCrearPubli.addEventListener('click', () => abrirModal('modalCrearPubli'));
+    }
+    const inputArchPubli = document.getElementById('archivoPubli');
+    if (inputArchPubli) {
+        inputArchPubli.addEventListener('change', e => {
+            const nomArch = document.getElementById('nombreArchivo');
+            if (nomArch) nomArch.textContent = e.target.files[0]?.name || '';
+        });
+    }
 
     document.getElementById('abrirSoporte').addEventListener('click', () => abrirModal('modalSoporte'));
     document.getElementById('formSoporte').addEventListener('submit', e => {

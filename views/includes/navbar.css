@@ -139,6 +139,166 @@ body { padding-left: 42px; }
     font: 12px Poppins, Arial, sans-serif;
 }
 
+/* Modal crear comunidad específico */
+.modal-crear-comunidad {
+    width: min(440px, calc(100vw - 32px)) !important;
+    background: #ebebeb;
+}
+
+.modal-crear-comunidad .modal-head {
+    border-bottom: 1.5px solid #222;
+    padding: 18px 24px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.form-crear-comunidad {
+    padding: 24px 28px 28px !important;
+    gap: 18px !important;
+    width: 100%;
+}
+
+.comunidad-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.input-redondeado-lila {
+    width: 100%;
+    background: #d6ccff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font: 500 12px 'Poppins', Arial, sans-serif;
+    color: #4b3ca7;
+    outline: none;
+    transition: background 0.2s;
+}
+
+.input-redondeado-lila::placeholder {
+    color: #5544b8;
+    opacity: 0.8;
+}
+
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.select-wrapper::after {
+    content: '▼';
+    font-size: 9px;
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #5544b8;
+}
+
+.comunidad-archivos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 14px;
+    width: 100%;
+}
+
+.caja-subir-archivo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label-archivo {
+    font-size: 11px;
+    font-weight: 500;
+    color: #444;
+}
+
+.tarjeta-archivo {
+    background: #d8cdff;
+    border-radius: 12px;
+    height: 125px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 10px 8px;
+    transition: transform 0.15s, background 0.15s;
+    text-align: center;
+}
+
+.tarjeta-archivo:hover {
+    background: #cebfff;
+    transform: translateY(-2px);
+}
+
+.icono-archivo-placeholder {
+    width: 38px;
+    height: 38px;
+    stroke: #222;
+}
+
+.preview-nombre {
+    font-size: 10px;
+    color: #3b2c91;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.preview-nombre:empty { display: none; }
+
+.btn-subir-pildora {
+    background: #8b72f8;
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.modal-btn-accion {
+    margin-top: 6px;
+    background: #8b72f8;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 9px 36px;
+    font: 600 12px 'Poppins', Arial, sans-serif;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(139, 114, 248, 0.35);
+    transition: background 0.15s, transform 0.15s;
+}
+
+.modal-btn-accion:hover {
+    background: #795df6;
+    transform: scale(1.03);
+}
+
+/* Modo oscuro para nuevo modal */
+body.oscuro .modal-crear-comunidad { background: #262629; color: #fff; }
+body.oscuro .modal-crear-comunidad .modal-head { border-bottom-color: #444; }
+body.oscuro .label-archivo { color: #ccc; }
+body.oscuro .input-redondeado-lila { background: #3c3461; color: #dcd4ff; }
+body.oscuro .input-redondeado-lila::placeholder { color: #b4a6f7; }
+body.oscuro .tarjeta-archivo { background: #3c3461; }
+body.oscuro .tarjeta-archivo:hover { background: #483f73; }
+body.oscuro .icono-archivo-placeholder { stroke: #e0d8ff; }
+body.oscuro .select-wrapper::after { color: #dcd4ff; }
+
 /* ===== Modo oscuro ===== */
 body.oscuro { background: #18181b; color: #eee; }
 body.oscuro .accion { color: #eee; }
