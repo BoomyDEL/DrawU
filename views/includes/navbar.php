@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Componente Navbar lateral
  * Uso: <?php include __DIR__ . '/includes/navbar.php'; ?>
@@ -35,6 +35,7 @@ $navBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : '
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         </button>
         <div class="side-menu" id="menuConfig" role="menu">
+            <a role="menuitem" href="<?= $navBase ?>monedas_cambio.php">Estilos de Mascota</a>
             <button role="menuitem" id="toggleTema">Modo oscuro</button>
             <button role="menuitem" id="abrirSoporte">Ayuda y soporte técnico</button>
             <a role="menuitem" href="<?= $navBase ?>pagina_login.php">Cerrar sesión</a>

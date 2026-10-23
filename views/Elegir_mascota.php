@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -26,10 +26,20 @@
     <div class="wave" aria-hidden="true"></div>
     
     <section class="picker" aria-live="polite">
-      <div class="pet-title"><div id="petName">Mascota 1</div><div class="outline" id="petNameOutline">Mascota 1</div></div>
-      <div class="pet-placeholder" id="petDescription">Imagen mascota 1<span>ESTILO MORADO</span></div>
+      <div class="pet-title">
+        <div id="petName">Dylan</div>
+        <div class="outline" id="petNameOutline">Dylan</div>
+      </div>
+      
+      <!-- Contenedor con la imagen del personaje centrada -->
+      <div class="pet-character-display" id="petCharacterDisplay">
+        <img id="petImg" src="../assets/img/personajes/dylan.png" alt="Mascota" class="picker-character-img">
+      </div>
+
+      <div class="pet-placeholder" id="petDescription"><span>ESTILO MORADO</span></div>
       <button class="apply" id="applyButton">Aplicar</button>
     </section>
+
     <button class="arrow left" id="previous" aria-label="Mascota anterior">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -39,8 +49,6 @@
     <div class="status" id="status" role="status"></div>
   </main>
 
-
-
-    <script src="../assets/js/elegir_mascota.js"></script>
-    </body>
+  <script src="../assets/js/elegir_mascota.js"></script>
+</body>
 </html>

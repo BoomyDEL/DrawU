@@ -1,4 +1,4 @@
-﻿/* Fuente Monument para tÃ­tulos */
+/* Fuente Monument para títulos */
 @font-face {
     font-family: 'Monument';
     src: url('../fonts/Monument.otf') format('opentype');
@@ -7,23 +7,79 @@
     font-display: swap;
 }
 
-/* ========================================
-   TIPOGRAFÃA
-======================================== */
-
-/* Fuente predeterminada para textos */
-body {
-    font-family: Arial, sans-serif;
+/* =========================================================
+   VARIABLES GLOBALES DE TEMA / MASCOTA
+   Permite que todas las páginas adopten los colores del estilo elegido:
+   - Mascota 1 (Dylan): Morado (#8b75f0 / #8F79F1)
+   - Mascota 2 (Tommy): Azul / Aqua (#5EA8D7)
+   - Mascota 3 (Boomy): Verde (#3fae4f)
+   ========================================================= */
+:root {
+    --purple: #8b75f0;
+    --primary-color: #8b75f0;
+    --primary-hover: #6a4fe0;
+    --primary-light: #c4b5ff;
+    --sidebar-bg: #a48aff;
+    --footer-bg: #d2c9ff;
+    --theme-text-color: #8F79F1;
 }
 
-/* Monument exclusivamente para tÃ­tulos */
+/* Tema Mascota 2: Tommy (Azul / Aqua) */
+body.tema-pet-aqua,
+html.tema-pet-aqua {
+    --purple: #5EA8D7;
+    --primary-color: #5EA8D7;
+    --primary-hover: #2074a9;
+    --primary-light: #a6ece6;
+    --sidebar-bg: #79C3F1;
+    --footer-bg: #c5e8fa;
+    --theme-text-color: #5EA8D7;
+}
+
+/* Tema Mascota 3: Boomy (Verde) */
+body.tema-pet-verde,
+html.tema-pet-verde {
+    --purple: #3fae4f;
+    --primary-color: #3fae4f;
+    --primary-hover: #2a8a38;
+    --primary-light: #b5e8b0;
+    --sidebar-bg: #78cc78;
+    --footer-bg: #cdeece;
+    --theme-text-color: #3fae4f;
+}
+
+/* ========================================
+   TIPOGRAFÍA
+   ======================================== */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Monument exclusivamente para títulos con color adaptativo al tema */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Monument', sans-serif;
     font-weight: 400;
-    color: #8F79F1;
+    color: var(--theme-text-color);
+    transition: color 0.3s ease;
 }
 
-body {
-    margin: 0;
+/* Adaptación del Sidebar al tema de mascota */
+.sidebar {
+    background: var(--sidebar-bg) !important;
+    transition: background 0.3s ease;
 }
 
+/* Adaptación del Footer al tema de mascota */
+.footer {
+    background: var(--footer-bg) !important;
+    transition: background 0.3s ease;
+}
+
+/* Botones y elementos comunes que usan color primario */
+.header-coins svg,
+.header-coins {
+    color: var(--theme-text-color);
+}

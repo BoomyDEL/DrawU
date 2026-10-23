@@ -1,7 +1,7 @@
-﻿:root { --purple:#8b75f0; --wave:#c4b5ff; --wave-btn:#aa95fa; --wave-btn-hover:#9a83f6; --apply:#6a4fe0; --apply-hover:#5a3fd0; --white:#fff; }
-  /* Tema mascota 2: aqua / turquesa */
+:root { --purple:#8b75f0; --wave:#c4b5ff; --wave-btn:#aa95fa; --wave-btn-hover:#9a83f6; --apply:#6a4fe0; --apply-hover:#5a3fd0; --white:#fff; }
+  /* Tema mascota 2: Tommy (aqua / turquesa) */
   .page.tema-aqua { --purple:#5EA8D7; --wave:#a6ece6; --wave-btn:#79C3F1; --wave-btn-hover:#4597ca; --apply:#2074a9; --apply-hover:#0a5c8f; }
-  /* Tema mascota 3: verde */
+  /* Tema mascota 3: Boomy (verde) */
   .page.tema-verde { --purple:#3fae4f; --wave:#b5e8b0; --wave-btn:#78cc78; --wave-btn-hover:#5cbd5f; --apply:#2a8a38; --apply-hover:#22762e; }
   * { box-sizing:border-box; }
   body { margin:0; min-height:100vh; overflow:hidden; background:#fff; color:var(--purple); font-family:Arial, Helvetica, sans-serif; }
@@ -13,24 +13,31 @@
 .wave { position:absolute; z-index:0; left:0; right:0; top:43%; bottom:0; background:url("../img/fondos/Vector 1-morado.png") center top / 100% 100% no-repeat; }
   .page.tema-aqua .wave { background-image:url("../img/fondos/Vector 1-aqua.png"); }
   .page.tema-verde .wave { background-image:url("../img/fondos/Vector 1-verde.png"); }
-  .picker { position:absolute; z-index:1; top:32.7%; left:50%; transform:translateX(-50%); width:365px; bottom:0; border-radius:76px 76px 0 0; background:var(--purple); transition:background .3s; color:#fff; display:flex; flex-direction:column; align-items:center; padding:39px 24px 18px; }
+  .picker { position:absolute; z-index:1; top:32.7%; left:50%; transform:translateX(-50%); width:385px; bottom:0; border-radius:76px 76px 0 0; background:var(--purple); transition:background .3s; color:#fff; display:flex; flex-direction:column; align-items:center; padding:39px 24px 18px; }
   .pet-title { text-align:center; font-family:'Monument', sans-serif; font-size:30px; line-height:1.05; font-weight:400; letter-spacing:normal; }
   .pet-title .outline { color:transparent; -webkit-text-stroke:1.8px #fff; }
-  .pet-placeholder { position:absolute; top:43%; left:0; right:0; text-align:center; font-size:14px; line-height:.95; font-weight:700; }
-  .pet-placeholder span { display:block; font-size:13px; font-weight:600; }
+
+  /* Contenedor e imagen de personaje centrado - Tamaño destacado */
+  .pet-character-display { position:absolute; top:49%; left:50%; transform:translate(-50%, -50%); display:flex; justify-content:center; align-items:center; pointer-events:none; width:100%; height:260px; }
+  .picker-character-img { height:230px; max-height:250px; width:auto; max-width:90%; object-fit:contain; filter:drop-shadow(0 10px 18px rgba(0,0,0,0.3)); transition:transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .picker:hover .picker-character-img { transform:scale(1.08) translateY(-4px); }
+
+  .pet-placeholder { position:absolute; bottom:64px; left:0; right:0; text-align:center; font-size:14px; line-height:.95; font-weight:700; }
+  .pet-placeholder span { display:block; font-size:13px; font-weight:600; letter-spacing:0.5px; opacity:0.95; }
   .apply { margin-top:auto; align-self:flex-end; border:0; border-radius:20px; padding:8px 26px; color:#fff; background:var(--apply); box-shadow:0 2px 6px rgba(0,0,0,.2); font-size:13px; font-weight:700; cursor:pointer; transition:transform .15s, background .15s; }
   .apply:hover { background:var(--apply-hover); transform:scale(1.04); }
   .arrow { position:absolute; z-index:2; top:67%; transform:translateY(-50%); width:62px; height:62px; border:0; border-radius:50%; background:var(--wave-btn); color:#fff; display:grid; place-items:center; cursor:pointer; transition:transform .15s, background .15s; }
   .arrow:hover { background:var(--wave-btn-hover); transform:translateY(-50%) scale(1.06); }
-  .arrow.left { left:calc(50% - 275px); }
-  .arrow.right { left:auto; right:calc(50% - 275px); } /* simÃ©trico al izquierdo */
+  .arrow.left { left:calc(50% - 285px); }
+  .arrow.right { left:auto; right:calc(50% - 285px); }
   .arrow svg { width:28px; height:28px; }
   .status { position:absolute; z-index:3; left:50%; bottom:12px; transform:translateX(-50%); color:#fff; font-size:12px; font-weight:700; white-space:nowrap; }
   @media (max-width:650px) {
     .page { padding:28px 7%; }
     h1 { font-size:clamp(28px,8vw,40px); }
-    .picker { top:35%; width:min(76vw,365px); border-radius:58px 58px 0 0; padding-top:35px; }
+    .picker { top:35%; width:min(80vw,385px); border-radius:58px 58px 0 0; padding-top:35px; }
     .pet-title { font-size:clamp(27px,7vw,34px); }
+    .picker-character-img { height:170px; }
     .arrow { top:70%; width:48px; height:48px; }
     .arrow.left { left:5%; }
     .arrow.right { left:auto; right:5%; }

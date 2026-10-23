@@ -1,0 +1,611 @@
+/* =========================================================
+   MONEDAS CAMBIO - ESTILOS DE MASCOTA & DRAWINGS
+   Consistencia total con elegir_mascota.css
+   ========================================================= */
+
+:root {
+    /* Paleta por defecto / Mascota 1 (Morado) */
+    --purple: #8b75f0;
+    --wave: #c4b5ff;
+    --wave-btn: #aa95fa;
+    --wave-btn-hover: #9a83f6;
+    --apply: #6a4fe0;
+    --apply-hover: #5a3fd0;
+    --white: #ffffff;
+    --font-monument: 'Monument', sans-serif;
+    --theme-wave-img: url("../img/fondos/Vector 1-morado.png");
+}
+
+/* Tema Mascota 2: Aqua */
+.monedas-page.tema-aqua {
+    --purple: #5EA8D7;
+    --wave: #a6ece6;
+    --wave-btn: #79C3F1;
+    --wave-btn-hover: #4597ca;
+    --apply: #2074a9;
+    --apply-hover: #0a5c8f;
+    --theme-wave-img: url("../img/fondos/Vector 1-aqua.png");
+}
+
+/* Tema Mascota 3: Verde */
+.monedas-page.tema-verde {
+    --purple: #3fae4f;
+    --wave: #b5e8b0;
+    --wave-btn: #78cc78;
+    --wave-btn-hover: #5cbd5f;
+    --apply: #2a8a38;
+    --apply-hover: #22762e;
+    --theme-wave-img: url("../img/fondos/Vector 1-verde.png");
+}
+
+/* ========================================
+   ESTRUCTURA Y LAYOUT
+   ======================================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--purple);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.monedas-layout {
+    display: flex;
+    position: relative;
+    min-height: calc(100vh - 64px);
+}
+
+.monedas-page {
+    flex: 1;
+    position: relative;
+    padding: 32px 6% 80px 100px;
+    min-height: calc(100vh - 64px);
+    background: #ffffff;
+    transition: color 0.35s ease;
+    overflow: hidden;
+}
+
+/* ========================================
+   FONDO ONDULADO (WAVE)
+   ======================================== */
+.wave-bg {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    right: 0;
+    top: 140px;
+    bottom: 0;
+    background-image: var(--theme-wave-img);
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    pointer-events: none;
+    transition: background-image 0.4s ease;
+}
+
+/* ========================================
+   HEADER SUPERIOR DE LA VENTANA
+   ======================================== */
+.monedas-top-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+}
+
+.top-header-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-title {
+    margin: 0;
+    font-family: var(--font-monument);
+    font-size: clamp(34px, 4.5vw, 48px);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--purple);
+    transition: color 0.3s ease;
+}
+
+.subtitle {
+    margin: 8px 0 16px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--purple);
+    line-height: 1.25;
+    transition: color 0.3s ease;
+}
+
+.btn-conseguir-drawings {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 6px 18px;
+    border-radius: 20px;
+    background: var(--purple);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-conseguir-drawings:hover {
+    background: var(--apply);
+    transform: translateY(-1px);
+    color: #ffffff;
+}
+
+/* Badge Drawings estilo botón circular */
+.drawings-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: default;
+    user-select: none;
+}
+
+.drawings-circle-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 9px solid var(--purple);
+    background: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.drawings-text {
+    font-family: var(--font-monument);
+    font-size: 14px;
+    color: var(--purple);
+    transition: color 0.3s ease;
+}
+
+.drawings-amount {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--purple);
+    transition: color 0.3s ease;
+}
+
+/* ========================================
+   LISTA DE ESTILOS DE MASCOTA
+   ======================================== */
+.pet-styles-list {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 85px;
+    padding: 15px 0;
+}
+
+.pet-card-row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 200px;
+}
+
+.pet-card-row.right-aligned {
+    align-items: flex-start;
+}
+
+.pet-card-row.left-aligned {
+    align-items: flex-end;
+}
+
+/* Espacio de color alargado para la mascota */
+.pet-card-bar {
+    width: 65%;
+    max-width: 640px;
+    height: 116px;
+    border-radius: 58px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+    transition: transform 0.25s ease;
+}
+
+.pet-card-row.right-aligned .pet-card-bar {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 58px;
+    border-bottom-right-radius: 58px;
+    margin-left: -100px;
+    padding-left: 100px;
+    justify-content: flex-end;
+    padding-right: 36px;
+}
+
+.pet-card-row.left-aligned .pet-card-bar {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 58px;
+    border-bottom-left-radius: 58px;
+    margin-right: -6%;
+    padding-right: 6%;
+    justify-content: flex-start;
+    padding-left: 36px;
+}
+
+/* Colores específicos de barra según mascota */
+.pet-row-morado .pet-card-bar {
+    background: #8b75f0;
+}
+.pet-row-aqua .pet-card-bar {
+    background: #5EA8D7;
+}
+.pet-row-verde .pet-card-bar {
+    background: #3fae4f;
+}
+
+/* ========================================
+   PERSONAJE CENTRADO EN EL ESPACIO DE COLOR (MÁS GRANDE)
+   ======================================== */
+.pet-character-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none;
+    height: 160px;
+}
+
+.pet-card-row.right-aligned .pet-character-container {
+    left: calc(50% + 50px);
+    transform: translate(-50%, -50%);
+}
+
+.pet-card-row.left-aligned .pet-character-container {
+    left: calc(50% - 30px);
+    transform: translate(-50%, -50%);
+}
+
+.character-img {
+    height: 155px; /* Ampliado considerablemente */
+    max-height: 165px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.28));
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pet-card-bar:hover .character-img {
+    transform: scale(1.1) translateY(-4px);
+}
+
+/* ========================================
+   PINCELES Y ANIMACIÓN
+   ======================================== */
+.pet-brush-wrapper {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 95px;
+    height: 130px;
+}
+
+.brush-img {
+    height: 145px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+    transform-origin: bottom center;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Orientación del pincel según posición en la maqueta */
+.pet-card-row.right-aligned .brush-img {
+    transform: translate(14px, -40px) rotate(-14deg);
+}
+
+.pet-card-row.left-aligned .brush-img {
+    transform: translate(-14px, -40px) rotate(14deg) scaleX(-1);
+}
+
+/* Animaciones del pincel desde el extremo del espacio de color */
+@keyframes brushStrokeRight {
+    0% {
+        transform: translate(-420px, -40px) rotate(-35deg);
+        opacity: 0.2;
+    }
+    30% {
+        opacity: 1;
+    }
+    70% {
+        transform: translate(28px, -40px) rotate(-8deg) scale(1.1);
+    }
+    100% {
+        transform: translate(14px, -40px) rotate(-14deg) scale(1);
+    }
+}
+
+@keyframes brushStrokeLeft {
+    0% {
+        transform: translate(420px, -40px) rotate(35deg) scaleX(-1);
+        opacity: 0.2;
+    }
+    30% {
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-28px, -40px) rotate(8deg) scaleX(-1) scale(1.1);
+    }
+    100% {
+        transform: translate(-14px, -40px) rotate(14deg) scaleX(-1) scale(1);
+    }
+}
+
+.pet-card-row.right-aligned .brush-img.brush-animating {
+    animation: brushStrokeRight 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.pet-card-row.left-aligned .brush-img.brush-animating {
+    animation: brushStrokeLeft 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ========================================
+   PIE DE LA TARJETA (COSTO + BOTÓN)
+   ======================================== */
+.pet-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 0 10px;
+}
+
+.pet-card-row.right-aligned .pet-card-footer {
+    align-self: flex-start;
+    margin-left: min(45vw, 420px);
+}
+
+.pet-card-row.left-aligned .pet-card-footer {
+    align-self: flex-end;
+    margin-right: min(45vw, 420px);
+}
+
+.cost-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 2px solid var(--purple);
+    color: var(--purple);
+    padding: 5px 14px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.cost-coin-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--purple);
+}
+
+.cost-val {
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.cost-label {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-pet-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 26px;
+    border: none;
+    border-radius: 18px;
+    background: var(--apply);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-pet-action:hover:not(:disabled) {
+    background: var(--apply-hover);
+    transform: scale(1.04);
+}
+
+.btn-pet-action.btn-equipado {
+    background: #2cb67d;
+    cursor: default;
+    box-shadow: none;
+}
+
+.btn-pet-action.btn-desbloqueado {
+    background: var(--wave-btn);
+}
+
+.btn-pet-action.btn-desbloqueado:hover {
+    background: var(--wave-btn-hover);
+}
+
+.btn-pet-action:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========================================
+   TÍTULO VERTICAL ROTADO (MASCOTA 1 / 2 / 3)
+   ======================================== */
+.pet-vertical-title {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    font-family: var(--font-monument);
+    font-size: clamp(24px, 3.2vw, 36px);
+    line-height: 0.95;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.pet-vertical-title.right-side {
+    right: 2%;
+    transform-origin: center center;
+}
+
+.pet-vertical-title.left-side {
+    left: 2%;
+    transform-origin: center center;
+}
+
+.pet-vertical-title .title-solid {
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.pet-vertical-title .title-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.8px #ffffff;
+}
+
+/* ========================================
+   TOAST DE NOTIFICACIÓN
+   ======================================== */
+.notification-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    padding: 12px 22px;
+    border-radius: 14px;
+    background: #333333;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.notification-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification-toast.toast-success {
+    background: #258f50;
+}
+
+.notification-toast.toast-error {
+    background: #c53030;
+}
+
+.notification-toast.toast-info {
+    background: var(--purple);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 900px) {
+    .monedas-page {
+        padding: 24px 4% 60px 80px;
+    }
+
+    .pet-card-bar {
+        width: 75%;
+    }
+
+    .pet-vertical-title {
+        font-size: 20px;
+    }
+
+    .character-img {
+        height: 125px;
+    }
+}
+
+@media (max-width: 650px) {
+    .monedas-page {
+        padding: 20px 16px 80px 16px;
+    }
+
+    .monedas-top-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .top-header-right {
+        align-self: flex-end;
+    }
+
+    .pet-styles-list {
+        gap: 50px;
+    }
+
+    .pet-card-bar {
+        width: 88%;
+        height: 95px;
+    }
+
+    .character-img {
+        height: 98px;
+    }
+
+    .brush-img {
+        height: 105px;
+    }
+
+    .pet-card-row.right-aligned .pet-card-bar {
+        margin-left: -16px;
+        padding-left: 20px;
+    }
+
+    .pet-card-row.left-aligned .pet-card-bar {
+        margin-right: -16px;
+        padding-right: 20px;
+    }
+
+    .pet-card-row.right-aligned .pet-card-footer,
+    .pet-card-row.left-aligned .pet-card-footer {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .pet-vertical-title {
+        display: none;
+    }
+}

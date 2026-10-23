@@ -19,10 +19,10 @@ $headerBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '..
             </button>
         </form>
 
-        <div class="header-coins" title="Monedas">
+        <a href="<?= $headerBase ?>views/monedas_cambio.php" class="header-coins" title="Monedas" style="text-decoration:none;">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4c3.1 0 5.6-2.5 5.6-5.6C23 5.4 18 2 12 2zM6.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
             <span class="header-coins-count">0</span>
-        </div>
+        </a>
 
         <button class="header-icon" aria-label="Notificaciones">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16V11a6 6 0 0 0-12 0v5l-2 2h16z"/><path d="M10 21h4"/></svg>
