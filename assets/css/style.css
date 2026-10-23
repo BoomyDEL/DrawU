@@ -1,4 +1,6 @@
-﻿/* =========================================================
+﻿@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* =========================================================
    VARIABLES GLOBALES DE TEMA / MASCOTA
    Permite que todas las páginas adopten los colores del estilo elegido:
    - Mascota 1 (Dylan): Morado (#8b75f0 / #8F79F1)
@@ -95,7 +97,7 @@ body {
    Estilos adicionales para views/inicio.php
 ========================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
 
 body.drawu-page {
   background: #fff;
