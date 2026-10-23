@@ -1,0 +1,536 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* PÁGINA GENERAL */
+
+body.drawu-explorar-page {
+  margin: 0;
+  background: #ffffff;
+  color: #17171c;
+  font-family: "Poppins", Arial, sans-serif;
+}
+
+.drawu-explorar,
+.drawu-explorar *,
+.drawu-explorar *::before,
+.drawu-explorar *::after {
+  box-sizing: border-box;
+}
+
+.drawu-explorar {
+  min-height: calc(100vh - 150px);
+  padding: 42px 28px 55px;
+}
+
+.drawu-explorar-contenedor {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* TÍTULO */
+
+.drawu-explorar-titulo {
+  margin-bottom: 25px;
+}
+
+.drawu-explorar-titulo h1 {
+  margin: 0;
+  color: #17171c;
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ============================================
+   GRID DE COMUNIDADES
+============================================ */
+
+.drawu-explorar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 34px;
+  align-items: start;
+  padding: 0 20px;
+}
+
+/* ============================================
+   TARJETA
+============================================ */
+
+.drawu-explorar-card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #f2eeff;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.drawu-explorar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(71, 51, 135, 0.15);
+}
+
+/* IMAGEN */
+
+.drawu-explorar-imagen {
+  width: 100%;
+  aspect-ratio: 1.65;
+  position: relative;
+  overflow: hidden;
+  background: #e7dddb;
+}
+
+.drawu-explorar-imagen picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.drawu-explorar-imagen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  transition: transform 0.3s ease;
+}
+
+.drawu-explorar-card:hover .drawu-explorar-imagen img {
+  transform: scale(1.035);
+}
+
+.drawu-explorar-imagen img[hidden] {
+  display: none !important;
+}
+
+/* BOTÓN X */
+
+.drawu-explorar-cerrar {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  z-index: 2;
+
+  width: 25px;
+  height: 25px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #ffffff;
+
+  font-size: 27px;
+  font-weight: 300;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.drawu-explorar-cerrar:hover {
+  background: rgba(0, 0, 0, 0.25);
+  transform: scale(1.12);
+}
+
+/* ============================================
+   INFORMACIÓN DE COMUNIDAD
+============================================ */
+
+.drawu-explorar-informacion {
+  min-height: 110px;
+  padding: 12px 18px 14px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  background: #f2eeff;
+}
+
+.drawu-explorar-informacion h2 {
+  margin: 0 0 7px;
+  color: #17171c;
+
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.drawu-explorar-detalles {
+  margin: 0 0 16px;
+
+  color: #343039;
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* ============================================
+   BOTÓN UNIRSE
+============================================ */
+
+.drawu-explorar-unirse {
+  width: 100%;
+  min-height: 29px;
+  margin-top: auto;
+
+  padding: 6px 12px;
+
+  border: none;
+  border-radius: 22px;
+
+  background: #9277f5;
+  color: #ffffff;
+
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.drawu-explorar-unirse:hover {
+  background: #7559e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(117, 89, 224, 0.25);
+}
+
+/* Cuando ya pertenece a la comunidad */
+
+.drawu-explorar-unirse.unido {
+  background: #75668c;
+  color: white;
+}
+
+.drawu-explorar-unirse.unido:hover {
+  background: #655577;
+}
+
+/* ============================================
+   MENSAJE SIN COMUNIDADES
+============================================ */
+
+.drawu-explorar-vacio {
+  max-width: 500px;
+  margin: 35px auto;
+
+  padding: 20px;
+
+  text-align: center;
+  font-size: 13px;
+
+  color: #777;
+}
+
+/* ============================================
+   AVISOS DE PRUEBA
+============================================ */
+
+.drawu-explorar-aviso {
+  position: fixed;
+  z-index: 250;
+
+  left: 50%;
+  bottom: 28px;
+
+  transform: translate(-50%, 20px);
+
+  max-width: calc(100vw - 30px);
+  padding: 12px 20px;
+
+  border-radius: 14px;
+
+  background: #342b50;
+  color: #ffffff;
+
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 12px;
+  text-align: center;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.drawu-explorar-aviso.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+/* ============================================
+   MODO OSCURO
+   Utiliza body.oscuro del navbar existente
+============================================ */
+
+body.drawu-explorar-page.oscuro {
+  background: #18181b;
+  color: #f2effa;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-titulo h1 {
+  color: #f2effa;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-card {
+  background: #2b2934;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-informacion {
+  background: #2b2934;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-informacion h2 {
+  color: #f5f2ff;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-detalles {
+  color: #c5bfce;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-imagen {
+  background: #3b3546;
+}
+
+body.drawu-explorar-page.oscuro .drawu-explorar-vacio {
+  color: #c4bfd0;
+}
+
+/* Header existente en modo oscuro */
+
+body.drawu-explorar-page.oscuro .header {
+  background: #242429;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+body.drawu-explorar-page.oscuro .header-logo,
+body.drawu-explorar-page.oscuro .header-search,
+body.drawu-explorar-page.oscuro .header-coins,
+body.drawu-explorar-page.oscuro .header-icon {
+  background: #373740;
+  color: #f5f4fa;
+}
+
+body.drawu-explorar-page.oscuro .header-search input {
+  color: white;
+}
+
+/* ============================================
+   RESPONSIVO - TABLET
+============================================ */
+
+@media (max-width: 1000px) {
+  .drawu-explorar {
+    padding: 32px 20px 45px;
+  }
+
+  .drawu-explorar-grid {
+    gap: 20px;
+    padding: 0 8px;
+  }
+
+  .drawu-explorar-informacion {
+    padding: 12px;
+  }
+
+  .drawu-explorar-detalles {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 780px) {
+  .drawu-explorar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .drawu-explorar-informacion h2 {
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   RESPONSIVO - CELULARES
+============================================ */
+
+@media (max-width: 650px) {
+  body.drawu-explorar-page {
+    padding-left: 0;
+  }
+
+  /* Oculta la barra lateral en móvil */
+
+  body.drawu-explorar-page .sidebar {
+    display: none;
+  }
+
+  /* Header */
+
+  body.drawu-explorar-page .header {
+    height: 58px;
+    padding: 0 13px;
+  }
+
+  body.drawu-explorar-page .header-logo {
+    width: 112px;
+    height: 33px;
+
+    background: transparent;
+    font-size: 20px;
+  }
+
+  body.drawu-explorar-page .header-actions {
+    gap: 7px;
+  }
+
+  body.drawu-explorar-page .header-search,
+  body.drawu-explorar-page .header-coins {
+    display: none;
+  }
+
+  body.drawu-explorar-page .header-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Contenido */
+
+  .drawu-explorar {
+    padding: 15px 10px 30px;
+  }
+
+  .drawu-explorar-titulo {
+    margin-bottom: 13px;
+  }
+
+  .drawu-explorar-titulo h1 {
+    font-size: 15px;
+  }
+
+  .drawu-explorar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 0;
+  }
+
+  .drawu-explorar-card {
+    border-radius: 7px;
+  }
+
+  .drawu-explorar-imagen {
+    aspect-ratio: 1.05;
+  }
+
+  .drawu-explorar-informacion {
+    min-height: 105px;
+    padding: 9px 9px 11px;
+  }
+
+  .drawu-explorar-informacion h2 {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .drawu-explorar-detalles {
+    font-size: 8px;
+    margin-bottom: 12px;
+  }
+
+  .drawu-explorar-unirse {
+    min-height: 27px;
+    padding: 6px 5px;
+    font-size: 8px;
+  }
+
+  .drawu-explorar-cerrar {
+    right: 5px;
+    top: 5px;
+    font-size: 23px;
+  }
+
+  /* Footer existente */
+
+  body.drawu-explorar-page .footer {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 350px) {
+  .drawu-explorar-informacion {
+    padding-inline: 7px;
+  }
+
+  .drawu-explorar-informacion h2 {
+    font-size: 9px;
+  }
+
+  .drawu-explorar-unirse {
+    font-size: 7px;
+  }
+}
+
+/* ============================================
+   ACCESIBILIDAD
+============================================ */
+
+.drawu-explorar button:focus-visible {
+  outline: 3px solid #6a4fe0;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawu-explorar *,
+  .drawu-explorar-aviso {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.drawu-explorar-ver {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: transparent;
+  border: 1px solid #9277f5;
+  color: #7659d9;
+  font:
+    600 11px Poppins,
+    Arial,
+    sans-serif;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.drawu-explorar-ver:hover {
+  background: #9277f5;
+  color: #fff;
+}
+
+body.oscuro .drawu-explorar-ver {
+  color: #c1b3ff;
+}

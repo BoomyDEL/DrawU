@@ -1,0 +1,1163 @@
+/* =========================================
+   DRAWU - COMUNIDAD INDIVIDUAL
+========================================= */
+
+body.comunidad-ind-page {
+  background: #fff;
+  color: #272331;
+  font-family: Poppins, Arial, sans-serif;
+}
+
+.com-page,
+.com-page * {
+  box-sizing: border-box;
+}
+
+.com-page {
+  min-height: 75vh;
+  padding-bottom: 64px;
+}
+
+.com-container {
+  width: min(1140px, 100%);
+  margin: auto;
+  padding: 0 24px;
+}
+
+/* =========================================
+   NAVEGACIÓN SUPERIOR
+========================================= */
+
+.com-breadcrumb {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  padding: 18px 0;
+
+  color: #6e6579;
+  font-size: 12px;
+}
+
+.com-breadcrumb a {
+  color: #6a4fe0;
+  text-decoration: none;
+}
+
+.com-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   BANNER
+========================================= */
+
+.com-banner {
+  height: clamp(170px, 25vw, 285px);
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(115deg, #6d5bc1, #b9a7ff 58%, #eadfff);
+}
+
+.com-banner > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.com-banner > img[hidden],
+.com-avatar img[hidden],
+.com-post-image img[hidden] {
+  display: none;
+}
+
+.com-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #1b123970, transparent 65%);
+  pointer-events: none;
+}
+
+/* =========================================
+   INFORMACIÓN DE LA COMUNIDAD
+========================================= */
+
+.com-identity {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+
+  margin-top: -27px;
+  padding: 18px 24px 24px;
+
+  border-radius: 16px;
+  background: #f2eeff;
+  box-shadow: 0 4px 20px #37275b14;
+}
+
+.com-avatar {
+  position: relative;
+  overflow: hidden;
+
+  width: 100px;
+  height: 100px;
+
+  border-radius: 18px;
+
+  display: grid;
+  place-items: center;
+
+  background: #b8a5f8;
+  color: #fff;
+  font-weight: 700;
+}
+
+.com-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.com-avatar-fallback {
+  font-size: 14px;
+}
+
+.com-description h1 {
+  color: #6046d0;
+  margin: 0 0 7px;
+
+  font:
+    700 clamp(21px, 2.8vw, 30px)/1.15 Poppins,
+    Arial,
+    sans-serif;
+}
+
+.com-description p {
+  margin: 0 0 8px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+.com-description small {
+  font-size: 11px;
+  color: #625972;
+}
+
+/* =========================================
+   BOTONES GENERALES
+========================================= */
+
+.com-btn {
+  border: 0;
+  border-radius: 25px;
+  padding: 10px 18px;
+
+  background: #9277f5;
+  color: #fff;
+
+  font:
+    600 12px Poppins,
+    Arial,
+    sans-serif;
+  cursor: pointer;
+
+  transition:
+    transform 0.18s,
+    background 0.18s,
+    box-shadow 0.18s;
+}
+
+.com-btn:hover {
+  background: #785ae7;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px #6f55cf33;
+}
+
+.com-btn-join {
+  min-width: 168px;
+}
+
+.com-btn-join.unido,
+.com-btn-muted {
+  background: #706781;
+}
+
+.com-btn-join.unido:hover,
+.com-btn-muted:hover {
+  background: #5e566f;
+}
+
+/* =========================================
+   OTRAS COMUNIDADES
+========================================= */
+
+.com-others {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+
+  padding: 21px 0;
+  scrollbar-width: thin;
+}
+
+.com-others a {
+  color: #65577e;
+  white-space: nowrap;
+  text-decoration: none;
+  font-size: 11px;
+
+  border-radius: 30px;
+  padding: 8px 12px;
+  background: #f0ecf8;
+
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+
+.com-others a:hover,
+.com-others a[aria-current="page"] {
+  color: white;
+  background: #9277f5;
+}
+
+/* =========================================
+   TÍTULO PUBLICACIONES
+========================================= */
+
+.com-main-section {
+  padding-top: 5px;
+}
+
+.com-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  margin-bottom: 20px;
+}
+
+.com-title-row h2 {
+  margin: 0;
+  color: inherit;
+  font:
+    600 20px Poppins,
+    Arial,
+    sans-serif;
+}
+
+/* =========================================
+   FORMULARIO CREAR PUBLICACIÓN
+========================================= */
+
+.com-compose {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  margin-bottom: 24px;
+  padding: 20px;
+
+  border-radius: 15px;
+  background: #f2eeff;
+}
+
+.com-compose[hidden] {
+  display: none;
+}
+
+.com-compose h3 {
+  margin: 0 0 6px;
+  color: #6046d0;
+  font:
+    600 16px Poppins,
+    Arial,
+    sans-serif;
+}
+
+.com-compose label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.com-compose textarea,
+.com-compose input[type="file"] {
+  width: 100%;
+  min-width: 0;
+
+  border-radius: 12px;
+  padding: 11px;
+  border: 1px solid #d7cdec;
+
+  background: #fff;
+  color: #272331;
+
+  font:
+    12px Poppins,
+    Arial,
+    sans-serif;
+}
+
+.com-compose textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.com-helper {
+  margin: 0;
+  color: #716b7a;
+  font-size: 11px;
+}
+
+.com-compose-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+/* =========================================
+   GRID DE PUBLICACIONES
+========================================= */
+
+.com-post-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+}
+
+.com-post {
+  overflow: hidden;
+  border-radius: 12px;
+
+  background: #ebebee;
+  min-width: 0;
+
+  box-shadow: 0 2px 8px #00000008;
+}
+
+/* ENCABEZADO */
+
+.com-post-header {
+  padding: 14px 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.com-post-author {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  text-decoration: none;
+  color: #444052;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.com-post-author:hover {
+  color: #7254d9;
+  text-decoration: underline;
+}
+
+.com-follow {
+  cursor: pointer;
+  border: 0;
+  border-radius: 22px;
+
+  background: #aa90fa;
+  color: white;
+
+  padding: 7px 17px;
+
+  font:
+    600 11px Poppins,
+    Arial,
+    sans-serif;
+
+  transition:
+    background 0.18s,
+    transform 0.18s;
+}
+
+.com-follow:hover {
+  background: #8665ec;
+  transform: translateY(-1px);
+}
+
+.com-follow.siguiendo {
+  background: #716585;
+}
+
+/* TEXTO */
+
+.com-post-text {
+  margin: 0;
+  padding: 0 16px 12px;
+
+  font-size: 12px;
+  line-height: 1.55;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* IMAGEN */
+
+.com-post-image {
+  width: 100%;
+  aspect-ratio: 1.38;
+
+  background: #cec6dc;
+  overflow: hidden;
+}
+
+.com-post-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  display: block;
+}
+
+/* ACCIONES */
+
+.com-post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px 16px;
+}
+
+.com-post-actions button {
+  border: 0;
+  padding: 4px 0;
+
+  background: transparent;
+  color: #36303c;
+
+  font:
+    500 11px Poppins,
+    Arial,
+    sans-serif;
+  cursor: pointer;
+
+  transition:
+    color 0.18s,
+    transform 0.18s;
+}
+
+.com-post-actions button:hover {
+  color: #7251d7;
+  transform: translateY(-1px);
+}
+
+.com-post-actions button.liked {
+  color: #d72f66;
+  font-weight: 700;
+}
+
+.com-empty {
+  padding: 35px 0;
+  text-align: center;
+  color: #777;
+  font-size: 13px;
+}
+
+/* =========================================
+   COMENTARIOS
+========================================= */
+
+.com-dialog-backdrop[hidden] {
+  display: none;
+}
+
+.com-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+
+  background: #0d0b16a8;
+
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.com-dialog {
+  width: min(440px, 100%);
+  max-height: 80vh;
+  overflow: hidden;
+
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 15px 50px #0004;
+
+  display: flex;
+  flex-direction: column;
+
+  color: #272331;
+}
+
+.com-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 13px 18px;
+  border-bottom: 1px solid #dedbe4;
+}
+
+.com-dialog-head h2 {
+  margin: 0;
+  color: inherit;
+  font:
+    600 16px Poppins,
+    Arial,
+    sans-serif;
+}
+
+.com-dialog-head button {
+  border: 0;
+  background: transparent;
+  font-size: 26px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.com-comment-list {
+  min-height: 150px;
+  padding: 15px 18px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.com-comment-list p {
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}
+
+.com-comment-list strong {
+  color: #8064df;
+  margin-right: 8px;
+}
+
+.com-comment-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #dedbe4;
+}
+
+.com-comment-form input {
+  min-width: 0;
+  flex: 1;
+
+  padding: 8px 11px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+
+  font:
+    12px Poppins,
+    Arial,
+    sans-serif;
+}
+
+/* MENSAJES */
+
+.com-toast {
+  position: fixed;
+  z-index: 350;
+
+  bottom: 22px;
+  left: 50%;
+
+  transform: translate(-50%, 20px);
+
+  padding: 12px 18px;
+  max-width: calc(100vw - 28px);
+
+  border-radius: 12px;
+
+  color: white;
+  background: #33254d;
+
+  box-shadow: 0 7px 25px #0003;
+
+  font:
+    500 12px Poppins,
+    Arial,
+    sans-serif;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.com-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* =========================================
+   MODO OSCURO
+   Compatible con navbar.js
+========================================= */
+
+body.comunidad-ind-page.oscuro {
+  background: #17171b;
+  color: #f5f2ff;
+}
+
+body.oscuro .com-identity,
+body.oscuro .com-compose {
+  background: #292633;
+  color: #f5f2ff;
+}
+
+body.oscuro .com-description h1,
+body.oscuro .com-compose h3 {
+  color: #b7a5ff;
+}
+
+body.oscuro .com-description small,
+body.oscuro .com-helper {
+  color: #bdb6ce;
+}
+
+body.oscuro .com-breadcrumb {
+  color: #bdb6ce;
+}
+
+body.oscuro .com-breadcrumb a {
+  color: #c4b5ff;
+}
+
+body.oscuro .com-others a {
+  background: #2b2833;
+  color: #d5cbef;
+}
+
+body.oscuro .com-others a[aria-current="page"],
+body.oscuro .com-others a:hover {
+  background: #8066e9;
+  color: white;
+}
+
+body.oscuro .com-post {
+  background: #292a30;
+  color: #f5f2ff;
+}
+
+body.oscuro .com-post-author,
+body.oscuro .com-post-actions button {
+  color: #f0ebfa;
+}
+
+body.oscuro .com-post-actions button.liked {
+  color: #ff729b;
+}
+
+body.oscuro .com-compose textarea,
+body.oscuro .com-compose input[type="file"],
+body.oscuro .com-comment-form input {
+  background: #393543;
+  color: white;
+  border-color: #61596d;
+}
+
+body.oscuro .com-dialog {
+  background: #292633;
+  color: #fff;
+}
+
+body.oscuro .com-dialog-head,
+body.oscuro .com-comment-form {
+  border-color: #514b5b;
+}
+
+body.oscuro .header {
+  background: #242429;
+}
+
+body.oscuro .header-logo,
+body.oscuro .header-search,
+body.oscuro .header-coins,
+body.oscuro .header-icon {
+  background: #373740;
+  color: #f5f4fa;
+}
+
+body.oscuro .header-search input {
+  color: white;
+}
+
+/* =========================================
+   RESPONSIVO - TABLET
+========================================= */
+
+@media (max-width: 800px) {
+  .com-identity {
+    grid-template-columns: 78px 1fr;
+    gap: 14px;
+  }
+
+  .com-avatar {
+    width: 78px;
+    height: 78px;
+  }
+
+  .com-btn-join {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .com-post-grid {
+    gap: 12px;
+  }
+}
+
+/* =========================================
+   RESPONSIVO - CELULAR
+========================================= */
+
+@media (max-width: 650px) {
+  body.comunidad-ind-page {
+    padding-left: 0;
+  }
+
+  body.comunidad-ind-page .sidebar {
+    display: none;
+  }
+
+  body.comunidad-ind-page .header {
+    height: 58px;
+    padding: 0 12px;
+  }
+
+  body.comunidad-ind-page .header-search,
+  body.comunidad-ind-page .header-coins {
+    display: none;
+  }
+
+  .com-container {
+    padding: 0 13px;
+  }
+
+  .com-breadcrumb {
+    padding: 12px 0;
+    font-size: 11px;
+  }
+
+  .com-banner {
+    height: 170px;
+  }
+
+  .com-identity {
+    margin-top: -22px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .com-description h1 {
+    font-size: 20px;
+  }
+
+  .com-description p {
+    font-size: 11px;
+  }
+
+  .com-post-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .com-title-row h2 {
+    font-size: 17px;
+  }
+
+  .com-post-image {
+    aspect-ratio: 1.2;
+  }
+
+  .com-post-actions {
+    gap: 12px;
+  }
+
+  .com-compose {
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .com-page *,
+  .com-toast {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================
+   PUBLICACIONES ESTILO INICIO
+   COMUNIDAD INDIVIDUAL
+========================================== */
+
+/* Iconos reutilizables */
+
+.com-icons-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ==========================================
+   TARJETA DE PUBLICACIÓN
+========================================== */
+
+.com-post {
+  min-width: 0;
+  overflow: hidden;
+
+  border-radius: 9px;
+  background: #e9e9e9;
+  color: #171717;
+
+  box-shadow: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.com-post:hover {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================
+   ENCABEZADO
+========================================== */
+
+.com-post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-height: 62px;
+  padding: 10px 18px;
+
+  background: #e9e9e9;
+}
+
+/* Avatar circular */
+
+.com-post-avatar {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  background: white;
+  color: #171717;
+
+  border-radius: 50%;
+  text-decoration: none;
+
+  transition: transform 0.2s ease;
+}
+
+.com-post-avatar:hover {
+  transform: scale(1.06);
+}
+
+.com-post-avatar svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Nombre del usuario */
+
+.com-post-author {
+  flex: 1;
+  min-width: 0;
+
+  font-family: Poppins, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+
+  color: #818181;
+  text-decoration: none;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.com-post-author:hover {
+  color: #7053de;
+  text-decoration: underline;
+}
+
+/* ==========================================
+   BOTÓN SEGUIR
+========================================== */
+
+.com-follow {
+  min-width: 94px;
+
+  padding: 8px 15px;
+
+  border: none;
+  border-radius: 22px;
+
+  background: #a891ff;
+  color: #fff;
+
+  font:
+    600 11px Poppins,
+    Arial,
+    sans-serif;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.com-follow:hover {
+  background: #8d72ef;
+  transform: translateY(-2px);
+}
+
+.com-follow.siguiendo {
+  background: #75658e;
+}
+
+/* ==========================================
+   DESCRIPCIÓN
+========================================== */
+
+.com-post-text {
+  margin: 0;
+  padding: 4px 18px 12px;
+
+  background: #e9e9e9;
+  color: #252525;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   IMAGEN
+========================================== */
+
+.com-post-image {
+  width: 100%;
+  aspect-ratio: 1.18;
+
+  overflow: hidden;
+  background: #d6d6d6;
+}
+
+.com-post-image img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.com-post-image img[hidden] {
+  display: none;
+}
+
+/* ==========================================
+   ACCIONES
+========================================== */
+
+.com-post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  min-height: 46px;
+  gap: 15px;
+
+  padding: 9px 24px 11px;
+
+  background: #e9e9e9;
+}
+
+/* Botones de los iconos */
+
+.com-post-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  border: 0;
+  background: transparent;
+  color: #111;
+
+  padding: 2px;
+
+  font:
+    500 12px Poppins,
+    Arial,
+    sans-serif;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Tamaño de los SVG */
+
+.com-post-actions .com-icon {
+  width: 25px;
+  height: 25px;
+
+  fill: none;
+  stroke: currentColor;
+}
+
+/* Hover */
+
+.com-post-actions button:hover {
+  transform: translateY(-2px);
+  color: #795de2;
+}
+
+/* Me gusta seleccionado */
+
+.com-post-actions .com-like.liked {
+  color: #e43e70;
+}
+
+.com-post-actions .com-like.liked .com-icon {
+  fill: currentColor;
+}
+
+/* Contadores */
+
+.com-post-actions button span {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ==========================================
+   MODO OSCURO
+========================================== */
+
+body.comunidad-ind-page.oscuro .com-post,
+body.comunidad-ind-page.oscuro .com-post-header,
+body.comunidad-ind-page.oscuro .com-post-text,
+body.comunidad-ind-page.oscuro .com-post-actions {
+  background: #29292e;
+  color: #f2eff7;
+}
+
+body.comunidad-ind-page.oscuro .com-post-author {
+  color: #d0cddd;
+}
+
+body.comunidad-ind-page.oscuro .com-post-avatar {
+  background: #44434b;
+  color: white;
+}
+
+body.comunidad-ind-page.oscuro .com-post-actions button {
+  color: #f0eff3;
+}
+
+body.comunidad-ind-page.oscuro .com-post-actions .com-like.liked {
+  color: #fb7296;
+}
+
+body.comunidad-ind-page.oscuro .com-post-image {
+  background: #373740;
+}
+
+/* ==========================================
+   RESPONSIVO
+========================================== */
+
+@media (max-width: 650px) {
+  .com-post-header {
+    min-height: 51px;
+    padding: 8px 11px;
+    gap: 9px;
+  }
+
+  .com-post-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .com-post-avatar svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .com-post-author {
+    font-size: 10px;
+  }
+
+  .com-follow {
+    min-width: 76px;
+    padding: 7px 10px;
+    font-size: 10px;
+  }
+
+  .com-post-image {
+    aspect-ratio: 1.12;
+  }
+
+  .com-post-text {
+    font-size: 11px;
+    padding: 5px 12px 10px;
+  }
+
+  .com-post-actions {
+    padding: 8px 16px 10px;
+    gap: 13px;
+  }
+
+  .com-post-actions .com-icon {
+    width: 23px;
+    height: 23px;
+  }
+}
