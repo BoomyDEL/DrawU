@@ -18,7 +18,7 @@ $currentPage = 'monedas_cambio';
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="../assets/css/monedas_cambio.css">
 </head>
 <body>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * main.js - Sincronización global de monedas y temas en todas las vistas de DrawU
  */
 (() => {

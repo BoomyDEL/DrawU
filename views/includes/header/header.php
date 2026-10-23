@@ -9,7 +9,7 @@ $headerBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '..
 <link rel="stylesheet" href="<?= $headerBase ?>views/includes/header/header.css">
 
 <header class="header">
-    <a href="<?= $headerBase ?>index.php" class="header-logo">Logo</a>
+    <a href="<?= $headerBase ?>views/inicio.php" class="header-logo">Logo</a>
 
     <div class="header-actions">
         <form class="header-search" action="#" method="get">

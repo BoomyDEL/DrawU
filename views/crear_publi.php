@@ -11,7 +11,7 @@
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="../views/includes/navbar.css">
     <link rel="stylesheet" href="../assets/css/crear_publi.css">
 </head>
@@ -94,7 +94,7 @@
         </div>
     </main>
 
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
     <script>
         // Pestañas
         const tabNormal = document.getElementById('tabPubliNormal');

@@ -11,7 +11,7 @@
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="../assets/css/usuario_propio.css">
     <link rel="stylesheet" href="../assets/css/publicaciones.css">
     <link rel="stylesheet" href="../assets/css/usuario_externo.css">
@@ -310,7 +310,7 @@
         </form>
     </aside>
 
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
     <script src="../assets/js/publicaciones.js"></script>
     <script src="../assets/js/usuario_externo.js"></script>
     <?php include __DIR__ . '/includes/footer.php'; ?>

@@ -76,7 +76,7 @@ function escaparInicio($texto) {
     >
 
     
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
 </head>
 
 <body class="drawu-page">
@@ -457,7 +457,7 @@ function escaparInicio($texto) {
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
     <!-- Funciones de la página -->
-    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>" defer></script>
 
 </body>
 </html>

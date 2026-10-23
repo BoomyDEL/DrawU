@@ -49,7 +49,7 @@ function escReto($dato) {
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="../assets/css/reto_dia.css">
 </head>
 

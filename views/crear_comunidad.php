@@ -11,7 +11,7 @@
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="../assets/css/crear_comunidad.css">
    
 </head>
@@ -72,7 +72,7 @@
         </div>
     </main>
 
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
     <script src="../assets/js/crear_comunidad.js"></script>
     
     <?php include __DIR__ . '/includes/footer.php'; ?>
