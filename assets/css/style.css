@@ -1,13 +1,4 @@
-/* Fuente Monument para títulos */
-@font-face {
-    font-family: 'Monument';
-    src: url('../fonts/Monument.otf') format('opentype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-/* =========================================================
+﻿/* =========================================================
    VARIABLES GLOBALES DE TEMA / MASCOTA
    Permite que todas las páginas adopten los colores del estilo elegido:
    - Mascota 1 (Dylan): Morado (#8b75f0 / #8F79F1)
@@ -15,71 +6,1062 @@
    - Mascota 3 (Boomy): Verde (#3fae4f)
    ========================================================= */
 :root {
-    --purple: #8b75f0;
-    --primary-color: #8b75f0;
-    --primary-hover: #6a4fe0;
-    --primary-light: #c4b5ff;
-    --sidebar-bg: #a48aff;
-    --footer-bg: #d2c9ff;
-    --theme-text-color: #8F79F1;
+  --purple: #8b75f0;
+  --primary-color: #8b75f0;
+  --primary-hover: #6a4fe0;
+  --primary-light: #c4b5ff;
+  --sidebar-bg: #a48aff;
+  --footer-bg: #d2c9ff;
+  --theme-text-color: #8f79f1;
 }
 
 /* Tema Mascota 2: Tommy (Azul / Aqua) */
 body.tema-pet-aqua,
 html.tema-pet-aqua {
-    --purple: #5EA8D7;
-    --primary-color: #5EA8D7;
-    --primary-hover: #2074a9;
-    --primary-light: #a6ece6;
-    --sidebar-bg: #79C3F1;
-    --footer-bg: #c5e8fa;
-    --theme-text-color: #5EA8D7;
+  --purple: #5ea8d7;
+  --primary-color: #5ea8d7;
+  --primary-hover: #2074a9;
+  --primary-light: #a6ece6;
+  --sidebar-bg: #79c3f1;
+  --footer-bg: #c5e8fa;
+  --theme-text-color: #5ea8d7;
 }
 
 /* Tema Mascota 3: Boomy (Verde) */
 body.tema-pet-verde,
 html.tema-pet-verde {
-    --purple: #3fae4f;
-    --primary-color: #3fae4f;
-    --primary-hover: #2a8a38;
-    --primary-light: #b5e8b0;
-    --sidebar-bg: #78cc78;
-    --footer-bg: #cdeece;
-    --theme-text-color: #3fae4f;
+  --purple: #3fae4f;
+  --primary-color: #3fae4f;
+  --primary-hover: #2a8a38;
+  --primary-light: #b5e8b0;
+  --sidebar-bg: #78cc78;
+  --footer-bg: #cdeece;
+  --theme-text-color: #3fae4f;
+}
+
+/* Adaptación del Sidebar y Footer al tema de mascota */
+.sidebar {
+  background: var(--sidebar-bg) !important;
+  transition: background 0.3s ease;
+}
+
+.footer {
+  background: var(--footer-bg) !important;
+  transition: background 0.3s ease;
+}
+
+.header-coins svg,
+.header-coins {
+  color: var(--theme-text-color);
+}
+
+/* Fuente Monument para tÃ­tulos */
+@font-face {
+  font-family: "Monument";
+  src: url("../fonts/Monument.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* ========================================
-   TIPOGRAFÍA
-   ======================================== */
+   TIPOGRAFÃA
+======================================== */
+
+/* Fuente predeterminada para textos */
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Monument exclusivamente para tÃ­tulos */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Monument", sans-serif;
+  font-weight: 400;
+  color: var(--theme-text-color, #8f79f1);
+  transition: color 0.3s ease;
+}
 
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    transition: color 0.3s ease, background-color 0.3s ease;
+  margin: 0;
 }
 
-/* Monument exclusivamente para títulos con color adaptativo al tema */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Monument', sans-serif;
-    font-weight: 400;
-    color: var(--theme-text-color);
-    transition: color 0.3s ease;
+/* ==========================================
+   DRAWU - PANTALLA DE INICIO
+   Estilos adicionales para views/inicio.php
+========================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+body.drawu-page {
+  background: #fff;
+  color: #17171c;
+  font-family: "Poppins", Arial, sans-serif;
 }
 
-/* Adaptación del Sidebar al tema de mascota */
-.sidebar {
-    background: var(--sidebar-bg) !important;
-    transition: background 0.3s ease;
+.drawu-page .drawu-home {
+  min-height: 70vh;
 }
 
-/* Adaptación del Footer al tema de mascota */
-.footer {
-    background: var(--footer-bg) !important;
-    transition: background 0.3s ease;
+.drawu-home *,
+.drawu-home *::before,
+.drawu-home *::after {
+  box-sizing: border-box;
 }
 
-/* Botones y elementos comunes que usan color primario */
-.header-coins svg,
-.header-coins {
-    color: var(--theme-text-color);
+/* ==========================================
+   BANNER RETO DEL DÍA
+========================================== */
+
+.drawu-hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: clamp(238px, 26vw, 370px);
+  overflow: hidden;
+  background: #678f8f;
+}
+
+.drawu-hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  /*
+       TODO: Agregar imagen del reto.
+       Cuando tengas el archivo, cambia none por:
+       url("../img/NOMBRE_DE_TU_IMAGEN.png")
+    */
+  background-image: none;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.drawu-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(27, 37, 54, 0.43),
+    rgba(27, 37, 54, 0.06) 70%
+  );
+}
+
+.drawu-hero-inner {
+  width: min(100%, 1360px);
+  min-height: inherit;
+  margin: auto;
+  padding: 35px 5% 25px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.drawu-hero h1 {
+  margin: 0;
+  color: white;
+  font-family: "Monument", "Poppins", sans-serif;
+  font-size: clamp(38px, 5vw, 70px);
+  line-height: 0.95;
+}
+
+.drawu-primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 21px;
+
+  border-radius: 100px;
+  background: #9e81fc;
+  color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.drawu-primary-link:hover {
+  background: #7757e3;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px #1d144844;
+}
+
+/* ==========================================
+   CONTENEDOR GENERAL
+========================================== */
+
+.drawu-home-inner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 3.5% 72px;
+}
+
+/* ==========================================
+   COMUNIDADES
+========================================== */
+
+.drawu-community-section {
+  padding: 27px 0 42px;
+}
+
+.drawu-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 28px 20px;
+}
+
+.drawu-heading-row h2 {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(15px, 1.6vw, 19px);
+  font-weight: 600;
+  color: inherit;
+}
+
+.drawu-see-all {
+  color: #7d62d4;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.drawu-see-all:hover {
+  text-decoration: underline;
+}
+
+/* Carrusel */
+
+.drawu-carousel-wrap {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 12px;
+}
+
+.drawu-carousel-arrow {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+
+  border: none;
+  border-radius: 50%;
+  background: #a891ff;
+  color: white;
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.drawu-carousel-arrow:hover:not(:disabled) {
+  background: #8065ee;
+  transform: scale(1.08);
+}
+
+.drawu-carousel-arrow:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.drawu-community-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 2px 0 6px;
+}
+
+.drawu-community-track::-webkit-scrollbar {
+  display: none;
+}
+
+.drawu-community-card {
+  position: relative;
+  flex: 0 0 calc((100% - 32px) / 3);
+  min-width: 0;
+  height: clamp(145px, 16vw, 205px);
+
+  border-radius: 9px;
+  overflow: hidden;
+  background: #d7d7e4;
+  scroll-snap-align: start;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.drawu-community-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px #0002;
+}
+
+/* Colores mientras no hay imágenes */
+
+.drawu-community-boomy {
+  background: #729aa3;
+}
+
+.drawu-community-redisenos {
+  background: #dbb6cc;
+}
+
+.drawu-community-arte {
+  background: #cec2f7;
+}
+
+.drawu-community-historias {
+  background: #94a3bc;
+}
+
+/* Imágenes */
+
+.drawu-community-art {
+  position: absolute;
+  inset: 0;
+}
+
+.drawu-community-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Información al pasar el cursor */
+
+.drawu-community-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 13px;
+
+  background: linear-gradient(90deg, #28232dbb, #28232d2b);
+
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drawu-community-card:first-child .drawu-community-overlay,
+.drawu-community-card:hover .drawu-community-overlay,
+.drawu-community-card:focus-within .drawu-community-overlay {
+  opacity: 1;
+}
+
+.drawu-community-overlay h3 {
+  color: white;
+  margin: 0 0 4px;
+  font:
+    700 13px/1.25 "Poppins",
+    sans-serif;
+}
+
+.drawu-community-overlay p {
+  margin: 0;
+  max-width: 260px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.drawu-community-overlay a {
+  align-self: flex-end;
+  padding: 5px 15px;
+
+  border-radius: 25px;
+  background: #a891ff;
+  color: white;
+
+  text-decoration: none;
+  font-size: 10px;
+  transition: background 0.2s;
+}
+
+.drawu-community-overlay a:hover {
+  background: #7e62e7;
+  color: white;
+}
+
+/* ==========================================
+   PUBLICACIONES
+========================================== */
+
+.drawu-feed {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 18px;
+}
+
+.drawu-post {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #e9e9e9;
+  color: #111;
+}
+
+/* Encabezado */
+
+.drawu-post-header {
+  min-height: 62px;
+  padding: 10px 19px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drawu-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #fff;
+  color: #171717;
+
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+.drawu-avatar svg {
+  width: 24px;
+  height: 24px;
+}
+
+.drawu-post-user {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #7a7a7a;
+  text-decoration: none;
+  font:
+    600 12px "Poppins",
+    sans-serif;
+}
+
+.drawu-post-user:hover {
+  color: #7156db;
+  text-decoration: underline;
+}
+
+/* Seguir usuario */
+
+.drawu-follow {
+  border: none;
+  border-radius: 22px;
+  background: #ab91fb;
+  color: white;
+
+  min-width: 95px;
+  padding: 8px 14px;
+
+  font:
+    600 11px "Poppins",
+    sans-serif;
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.drawu-follow:hover {
+  background: #8e73f2;
+  transform: translateY(-1px);
+}
+
+.drawu-follow.siguiendo {
+  background: #73638e;
+}
+
+/* Descripción */
+
+.drawu-post-caption {
+  margin: 0;
+  padding: 2px 20px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Imagen de publicación */
+
+.drawu-post-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  aspect-ratio: 1.18;
+  overflow: hidden;
+  background: #d6d6d6;
+}
+
+.drawu-post-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Acciones */
+
+.drawu-post-actions {
+  min-height: 42px;
+  padding: 8px 24px 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.drawu-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  border: none;
+  padding: 2px;
+  background: transparent;
+  color: #151515;
+
+  cursor: pointer;
+  font:
+    500 12px "Poppins",
+    sans-serif;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.drawu-action svg {
+  width: 24px;
+  height: 24px;
+}
+
+.drawu-action:hover {
+  color: #795de2;
+  transform: translateY(-2px);
+}
+
+.drawu-like svg {
+  fill: none;
+}
+
+.drawu-like.liked {
+  color: #d94373;
+}
+
+.drawu-like.liked svg {
+  fill: #d94373;
+}
+
+/* ==========================================
+   MODAL DE COMENTARIOS
+========================================== */
+
+.drawu-comments-backdrop[hidden] {
+  display: none !important;
+}
+
+.drawu-comments-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+
+  background: #0a0718a6;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.drawu-comments-modal {
+  width: min(440px, 100%);
+  max-height: min(550px, 85vh);
+
+  border-radius: 15px;
+  background: white;
+  color: #222;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 22px 70px #0005;
+}
+
+.drawu-comments-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 18px;
+}
+
+.drawu-comments-titlebar h2 {
+  margin: 0;
+  font:
+    600 16px "Poppins",
+    sans-serif;
+  color: inherit;
+}
+
+.drawu-comments-titlebar button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.drawu-comments-list {
+  min-height: 160px;
+  overflow-y: auto;
+  padding: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.drawu-comments-empty {
+  color: #75717d;
+  text-align: center;
+  padding: 40px 10px;
+}
+
+.drawu-comments-item {
+  margin: 0 0 11px;
+  overflow-wrap: anywhere;
+}
+
+.drawu-comments-item strong {
+  color: #7e62e7;
+  margin-right: 7px;
+}
+
+.drawu-comments-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.drawu-comments-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #bbb;
+  border-radius: 23px;
+  padding: 8px 13px;
+  font:
+    12px "Poppins",
+    sans-serif;
+}
+
+.drawu-comments-form button {
+  border: none;
+  border-radius: 20px;
+  background: #9075ed;
+  color: white;
+  padding: 8px 15px;
+  cursor: pointer;
+}
+
+/* Mensajes emergentes */
+
+.drawu-toast {
+  position: fixed;
+  z-index: 210;
+  bottom: 25px;
+  left: 50%;
+
+  transform: translate(-50%, 25px);
+  opacity: 0;
+  pointer-events: none;
+
+  padding: 12px 19px;
+  border-radius: 13px;
+
+  background: #342b50;
+  color: white;
+
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+
+  box-shadow: 0 5px 22px #0004;
+
+  transition:
+    transform 0.25s,
+    opacity 0.25s;
+}
+
+.drawu-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ==========================================
+   MODO OSCURO
+   Compatible con navbar.js existente
+========================================== */
+
+body.drawu-page.oscuro {
+  background: #18181b;
+  color: #f1eff7;
+}
+
+body.drawu-page.oscuro .drawu-heading-row h2 {
+  color: #f2effa;
+}
+
+body.drawu-page.oscuro .drawu-see-all {
+  color: #b7a5ff;
+}
+
+body.drawu-page.oscuro .drawu-post {
+  background: #29292e;
+  color: #f1eff7;
+}
+
+body.drawu-page.oscuro .drawu-avatar {
+  background: #44434b;
+  color: white;
+}
+
+body.drawu-page.oscuro .drawu-post-user {
+  color: #d0cddd;
+}
+
+body.drawu-page.oscuro .drawu-post-image {
+  background: #363640;
+}
+
+body.drawu-page.oscuro .drawu-action {
+  color: #f0eff3;
+}
+
+body.drawu-page.oscuro .drawu-like.liked {
+  color: #fb6d91;
+}
+
+body.drawu-page.oscuro .drawu-follow.siguiendo {
+  background: #555167;
+}
+
+/* Header existente */
+
+body.drawu-page.oscuro .header {
+  background: #242429;
+  box-shadow: 0 2px 7px #0003;
+}
+
+body.drawu-page.oscuro .header-logo,
+body.drawu-page.oscuro .header-search,
+body.drawu-page.oscuro .header-coins,
+body.drawu-page.oscuro .header-icon {
+  background: #373740;
+  color: #f5f4fa;
+}
+
+body.drawu-page.oscuro .header-search input {
+  color: white;
+}
+
+/* Modal oscuro */
+
+body.drawu-page.oscuro .drawu-comments-modal {
+  background: #272730;
+  color: #faf9ff;
+}
+
+body.drawu-page.oscuro .drawu-comments-titlebar,
+body.drawu-page.oscuro .drawu-comments-form {
+  border-color: #444;
+}
+
+body.drawu-page.oscuro .drawu-comments-form input {
+  background: #3b3b45;
+  color: white;
+  border-color: #666;
+}
+
+/* ==========================================
+   NAVEGACIÓN MÓVIL
+========================================== */
+
+.drawu-nav-mobile {
+  display: none;
+}
+
+/* ==========================================
+   RESPONSIVO - TABLETS
+========================================== */
+
+@media (max-width: 900px) {
+  .drawu-community-card {
+    flex-basis: calc((100% - 16px) / 2);
+    height: 166px;
+  }
+
+  .drawu-home-inner {
+    padding-inline: 18px;
+  }
+
+  .drawu-feed {
+    gap: 12px;
+  }
+
+  .drawu-post-header {
+    padding-inline: 12px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVO - CELULARES
+========================================== */
+
+@media (max-width: 650px) {
+  body.drawu-page {
+    padding-left: 0;
+  }
+
+  /* Ocultar menú lateral original en móvil */
+  body.drawu-page .sidebar {
+    display: none;
+  }
+
+  /* Header */
+  body.drawu-page .header {
+    height: 56px;
+    padding: 0 13px;
+  }
+
+  body.drawu-page .header-logo {
+    width: 105px;
+    height: 31px;
+    font-size: 17px;
+    background: transparent;
+  }
+
+  body.drawu-page .header-search,
+  body.drawu-page .header-coins {
+    display: none;
+  }
+
+  body.drawu-page .header-actions {
+    gap: 8px;
+  }
+
+  body.drawu-page .header-icon {
+    width: 31px;
+    height: 31px;
+  }
+
+  /* Navegación horizontal para móvil */
+  body.drawu-page .drawu-nav-mobile {
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 8px;
+    background: #f5f2ff;
+  }
+
+  .drawu-nav-mobile a {
+    flex: 1;
+    min-width: max-content;
+    padding: 8px 6px;
+    border-radius: 10px;
+
+    color: #6145c1;
+    text-align: center;
+    text-decoration: none;
+    font:
+      600 11px "Poppins",
+      sans-serif;
+  }
+
+  .drawu-nav-mobile a[aria-current="page"] {
+    background: #a891ff;
+    color: white;
+  }
+
+  body.drawu-page.oscuro .drawu-nav-mobile {
+    background: #252332;
+  }
+
+  body.drawu-page.oscuro .drawu-nav-mobile a {
+    color: #cbbdff;
+  }
+
+  body.drawu-page.oscuro .drawu-nav-mobile a[aria-current="page"] {
+    color: white;
+  }
+
+  /* Reto */
+  .drawu-hero {
+    min-height: 245px;
+  }
+
+  .drawu-hero-inner {
+    padding: 20px 18px 17px;
+  }
+
+  .drawu-hero h1 {
+    font-size: clamp(32px, 9vw, 43px);
+  }
+
+  .drawu-primary-link {
+    padding: 5px 16px;
+    font-size: 11px;
+  }
+
+  /* Comunidades */
+  .drawu-home-inner {
+    padding: 0 12px 40px;
+  }
+
+  .drawu-community-section {
+    padding: 20px 0 22px;
+  }
+
+  .drawu-heading-row {
+    margin: 0 5px 12px;
+  }
+
+  .drawu-heading-row h2 {
+    font-size: 14px;
+  }
+
+  .drawu-carousel-wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .drawu-carousel-arrow {
+    display: none;
+  }
+
+  .drawu-community-track {
+    gap: 9px;
+  }
+
+  .drawu-community-card {
+    flex-basis: 78%;
+    height: 132px;
+  }
+
+  .drawu-community-overlay {
+    opacity: 1;
+    padding: 10px;
+  }
+
+  .drawu-community-overlay p {
+    font-size: 9px;
+  }
+
+  /* Publicaciones */
+  .drawu-feed {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .drawu-post-header {
+    min-height: 48px;
+    padding: 7px 10px;
+    gap: 9px;
+  }
+
+  .drawu-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .drawu-avatar svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .drawu-post-user {
+    font-size: 10px;
+  }
+
+  .drawu-follow {
+    min-width: 70px;
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  .drawu-post-image {
+    aspect-ratio: 1;
+  }
+
+  .drawu-post-caption {
+    font-size: 12px;
+  }
+
+  .drawu-post-actions {
+    padding: 6px 18px 8px;
+  }
+
+  body.drawu-page .footer {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .drawu-community-card {
+    flex-basis: 88%;
+  }
+
+  .drawu-home-inner {
+    padding-inline: 9px;
+  }
+}
+
+/* Accesibilidad */
+
+.drawu-home button:focus-visible,
+.drawu-home a:focus-visible {
+  outline: 3px solid #7152ef;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawu-home *,
+  .drawu-toast {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

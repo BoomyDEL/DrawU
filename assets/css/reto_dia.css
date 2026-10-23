@@ -1,0 +1,801 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+body.reto-page {
+  margin: 0;
+  background: #ffffff;
+  color: #1e1a27;
+  font-family: "Poppins", Arial, sans-serif;
+}
+
+.reto-main,
+.reto-main *,
+.reto-main *::before,
+.reto-main *::after {
+  box-sizing: border-box;
+}
+
+.reto-icons-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ==========================================
+   HERO
+========================================== */
+
+.reto-hero {
+  position: relative;
+  background: #ffffff;
+  padding: 24px 22px 0;
+}
+
+.reto-hero-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 255px;
+  gap: 24px;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.reto-hero-copy {
+  min-height: 125px;
+  padding: 24px 34px;
+  border-radius: 0 44px 44px 0;
+  background: #9f87f7;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reto-hero-copy h1 {
+  margin: 0 0 6px;
+  font-size: clamp(36px, 4.8vw, 56px);
+  line-height: 0.92;
+  font-weight: 800;
+}
+
+.reto-hero-copy p {
+  margin: 0;
+  max-width: 390px;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.reto-hero-copy em {
+  font-style: italic;
+  font-weight: 700;
+}
+
+.reto-hero-character {
+  width: min(255px, 100%);
+  aspect-ratio: 0.9;
+  margin-left: auto;
+
+  border-radius: 50%;
+  background: #e2e2e2;
+  color: #9d85f6;
+
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+
+  text-align: center;
+  padding: 25px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.reto-hero-character img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ola */
+.reto-hero-wave {
+  position: relative;
+  width: 100%;
+  height: 112px;
+  margin-top: 18px;
+  background: #b6a2ef;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.reto-hero-wave::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -42px;
+  width: 45%;
+  height: 70px;
+  background: #fff;
+  border-bottom-right-radius: 160px 55px;
+}
+
+/* ==========================================
+   TARJETA RETO
+========================================== */
+
+.reto-card-wrap {
+  background: #b6a2ef;
+  padding: 0 24px 40px;
+}
+
+.reto-card {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 24px 24px 16px;
+  border-radius: 12px;
+  background: #9b81f1;
+  box-shadow: 0 8px 25px rgba(70, 44, 135, 0.12);
+}
+
+.reto-card h2 {
+  margin: 0 0 18px;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(23px, 3.2vw, 38px);
+  font-weight: 800;
+}
+
+.reto-card-media {
+  overflow: hidden;
+  border-radius: 8px;
+  background: #d7d1ea;
+  aspect-ratio: 1.75;
+}
+
+.reto-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reto-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #71688a;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding: 18px;
+}
+
+.reto-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+/* ==========================================
+   DESTACADOS
+========================================== */
+
+.reto-featured {
+  position: relative;
+  background: #b6a2ef;
+  padding: 18px 24px 80px;
+}
+
+.reto-featured-head {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 28px;
+  color: #fff;
+}
+
+.reto-featured-head h2 {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 4.4vw, 54px);
+  line-height: 0.95;
+  font-weight: 800;
+}
+
+.reto-featured-head p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.reto-featured-list {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.reto-featured-item {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.reto-rank-pill {
+  align-self: flex-start;
+  min-height: 72px;
+  width: 112px;
+  margin-top: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 0 35px 35px 0;
+  background: #896fe6;
+  color: #fff;
+
+  font-size: 42px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   TARJETAS DE PUBLICACIÓN
+========================================== */
+
+.reto-post {
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e9e9e9;
+  color: #171717;
+  max-width: 540px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.reto-post-header {
+  min-height: 56px;
+  padding: 9px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reto-post-avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+  background: #fff;
+  color: #171717;
+  text-decoration: none;
+}
+
+.reto-post-avatar svg {
+  width: 22px;
+  height: 22px;
+}
+
+.reto-post-author {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #8a8a8a;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.reto-post-author:hover {
+  color: #7354de;
+  text-decoration: underline;
+}
+
+.reto-follow {
+  border: 0;
+  min-width: 88px;
+  padding: 8px 14px;
+
+  border-radius: 20px;
+  background: #ab91fb;
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.reto-follow:hover {
+  background: #8d72ef;
+  transform: translateY(-1px);
+}
+
+.reto-follow.siguiendo {
+  background: #72648d;
+}
+
+.reto-post-text {
+  margin: 0;
+  padding: 0 14px 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reto-post-image {
+  aspect-ratio: 1.12;
+  overflow: hidden;
+  background: #d5d5d5;
+}
+
+.reto-post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reto-post-image img[hidden] {
+  display: none !important;
+}
+
+.reto-post-actions,
+.reto-card-actions {
+  min-height: 42px;
+}
+
+.reto-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 0;
+  background: transparent;
+  color: #111;
+
+  padding: 10px;
+  cursor: pointer;
+
+  font-size: 12px;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.reto-action:hover {
+  color: #7558df;
+  transform: translateY(-2px);
+}
+
+.reto-icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+}
+
+.reto-like.liked {
+  color: #de4472;
+}
+
+.reto-like.liked .reto-icon {
+  fill: currentColor;
+}
+
+/* ==========================================
+   MODAL DE COMENTARIOS
+========================================== */
+
+.reto-comments-backdrop[hidden] {
+  display: none !important;
+}
+
+.reto-comments-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+
+  background: rgba(12, 9, 25, 0.65);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.reto-comments-modal {
+  width: min(430px, 100%);
+  max-height: 82vh;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  color: #26222e;
+
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
+}
+
+.reto-comments-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 18px;
+  border-bottom: 1px solid #ddd;
+}
+
+.reto-comments-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.reto-comments-head button {
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.reto-comments-list {
+  min-height: 160px;
+  padding: 16px 18px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reto-comments-list p {
+  margin: 0 0 10px;
+  overflow-wrap: anywhere;
+}
+
+.reto-comments-list strong {
+  color: #7f65e2;
+  margin-right: 8px;
+}
+
+.reto-comments-empty {
+  text-align: center;
+  color: #6f6c76;
+  padding: 32px 10px;
+}
+
+.reto-comments-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.reto-comments-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #bdbdbd;
+  border-radius: 20px;
+  padding: 9px 12px;
+  font-size: 12px;
+}
+
+.reto-comments-form button {
+  border: 0;
+  border-radius: 20px;
+  background: #9075ed;
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ==========================================
+   TOAST
+========================================== */
+
+.reto-toast {
+  position: fixed;
+  z-index: 250;
+  left: 50%;
+  bottom: 24px;
+
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+
+  padding: 12px 18px;
+  border-radius: 13px;
+  background: #342b50;
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.24);
+
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.reto-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ==========================================
+   MODO OSCURO
+========================================== */
+
+body.reto-page.oscuro {
+  background: #18181b;
+  color: #f3effc;
+}
+
+body.reto-page.oscuro .reto-hero {
+  background: #18181b;
+}
+
+body.reto-page.oscuro .reto-hero-wave::before {
+  background: #18181b;
+}
+
+body.reto-page.oscuro .reto-hero-character {
+  background: #3a3742;
+  color: #c6b8ff;
+}
+
+body.reto-page.oscuro .reto-card {
+  background: #8369de;
+}
+
+body.reto-page.oscuro .reto-post {
+  background: #29292e;
+  color: #f2eff7;
+}
+
+body.reto-page.oscuro .reto-post-author {
+  color: #d0cddd;
+}
+
+body.reto-page.oscuro .reto-post-avatar {
+  background: #44434b;
+  color: #fff;
+}
+
+body.reto-page.oscuro .reto-post-image {
+  background: #393942;
+}
+
+body.reto-page.oscuro .reto-action {
+  color: #f2eff7;
+}
+
+body.reto-page.oscuro .reto-like.liked {
+  color: #fb7499;
+}
+
+body.reto-page.oscuro .reto-comments-modal {
+  background: #282731;
+  color: #fff;
+}
+
+body.reto-page.oscuro .reto-comments-head,
+body.reto-page.oscuro .reto-comments-form {
+  border-color: #4b4656;
+}
+
+body.reto-page.oscuro .reto-comments-form input {
+  background: #3a3644;
+  color: #fff;
+  border-color: #66606f;
+}
+
+/* header existente */
+body.reto-page.oscuro .header {
+  background: #242429;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+body.reto-page.oscuro .header-logo,
+body.reto-page.oscuro .header-search,
+body.reto-page.oscuro .header-coins,
+body.reto-page.oscuro .header-icon {
+  background: #373740;
+  color: #f5f4fa;
+}
+
+body.reto-page.oscuro .header-search input {
+  color: white;
+}
+
+/* ==========================================
+   RESPONSIVO
+========================================== */
+
+@media (max-width: 980px) {
+  .reto-hero-top {
+    grid-template-columns: 1fr 220px;
+  }
+
+  .reto-featured-item {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .reto-rank-pill {
+    width: 84px;
+    min-height: 64px;
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 650px) {
+  body.reto-page {
+    padding-left: 0;
+  }
+
+  body.reto-page .sidebar {
+    display: none;
+  }
+
+  body.reto-page .header {
+    height: 58px;
+    padding: 0 12px;
+  }
+
+  body.reto-page .header-search,
+  body.reto-page .header-coins {
+    display: none;
+  }
+
+  .reto-hero {
+    padding: 12px 10px 0;
+  }
+
+  .reto-hero-top {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .reto-hero-copy {
+    min-height: 102px;
+    padding: 18px 20px;
+    border-radius: 0 34px 34px 0;
+  }
+
+  .reto-hero-copy h1 {
+    font-size: 36px;
+  }
+
+  .reto-hero-copy p {
+    font-size: 13px;
+  }
+
+  .reto-hero-character {
+    width: 170px;
+    margin: 0 auto;
+    font-size: 16px;
+  }
+
+  .reto-hero-wave {
+    height: 78px;
+    margin-top: 12px;
+  }
+
+  .reto-hero-wave::before {
+    top: -26px;
+    height: 48px;
+    width: 58%;
+  }
+
+  .reto-card-wrap {
+    padding: 0 10px 26px;
+  }
+
+  .reto-card {
+    padding: 14px 14px 10px;
+  }
+
+  .reto-card h2 {
+    font-size: 23px;
+    margin-bottom: 10px;
+  }
+
+  .reto-featured {
+    padding: 10px 10px 34px;
+  }
+
+  .reto-featured-head h2 {
+    font-size: 34px;
+  }
+
+  .reto-featured-head p {
+    font-size: 12px;
+  }
+
+  .reto-featured-list {
+    gap: 14px;
+  }
+
+  .reto-featured-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .reto-rank-pill {
+    width: 74px;
+    min-height: 46px;
+    border-radius: 0 25px 25px 0;
+    font-size: 26px;
+    margin-top: 0;
+  }
+
+  .reto-post {
+    max-width: 100%;
+  }
+
+  .reto-post-header {
+    min-height: 48px;
+    padding: 7px 10px;
+  }
+
+  .reto-post-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .reto-post-avatar svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .reto-post-author {
+    font-size: 10px;
+  }
+
+  .reto-follow {
+    min-width: 72px;
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  .reto-post-text {
+    font-size: 11px;
+    padding: 0 10px 8px;
+  }
+
+  .reto-post-actions,
+  .reto-card-actions {
+    gap: 10px;
+  }
+
+  .reto-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  body.reto-page .footer {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reto-main *,
+  .reto-toast {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
