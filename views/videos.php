@@ -32,8 +32,8 @@
                         <path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/>
                     </svg>
                 </div>
-                <span>Fulanito_detal</span>
-                <button class="seguir" onclick="location.href='usuario_externo.php'">Seguir</button>
+                <a href="usuario_externo.php">Fulanito_detal</a>
+                <button class="seguir"  data-usuario="Fulanito_detal">Seguir</button>
             </div>
             <div class="descripcion">Animación 2D viento</div>
         </section>

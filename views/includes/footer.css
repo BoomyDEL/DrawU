@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
 @font-face {
     font-family: 'Monument';
     src: url('../../assets/fonts/Monument.otf') format('opentype');
@@ -24,6 +26,7 @@
 
 .footer-info p {
     margin: 0;
+    font-family: Poppins, Arial, sans-serif;
     font-size: 9px;
     line-height: 1.6;
     color: #555;

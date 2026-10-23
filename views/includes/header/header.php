@@ -28,7 +28,7 @@ $headerBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '..
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16V11a6 6 0 0 0-12 0v5l-2 2h16z"/><path d="M10 21h4"/></svg>
         </button>
 
-        <a href="#" class="header-icon" aria-label="Perfil">
+        <a href="usuario_propio.php" class="header-icon" aria-label="Perfil">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         </a>
     </div>
