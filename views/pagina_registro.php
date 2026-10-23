@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de usuario</title>
+    <title>Registro de usuario | DrawU</title>
 
 <!-- Bootstrap -->
     <link
@@ -22,7 +22,7 @@
     <section class="panel-derecho" aria-labelledby="titulo"><h1 id="titulo">¡Bienvenido!</h1><p class="subtitulo">Registrar usuario</p>
 
 
-    <form id="formRegistro" action="registrar_usuario.php" method="POST">
+    <form id="formRegistro" action="pagina_login.php" method="POST">
     <label class="campo"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"></rect><path d="m3.5 6 8.5 6.5L20.5 6"></path></svg><input type="email" name="email" placeholder="E-mail" autocomplete="email" required></label>
     <label class="campo"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="5"></circle><path d="m11.5 11.5 8-8 2 2-2.5 2.5 1.5 1.5-2.5 2.5-1.5-1.5"></path></svg><input id="contrasena" type="password" name="contrasena" placeholder="Contraseña" autocomplete="new-password" minlength="8" required></label>
     <label class="campo"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="5"></circle><path d="m11.5 11.5 8-8 2 2-2.5 2.5 1.5 1.5-2.5 2.5-1.5-1.5"></path></svg><input id="confirmar" type="password" name="confirmar_contrasena" placeholder="Confirmar contraseña" autocomplete="new-password" minlength="8" required></label>

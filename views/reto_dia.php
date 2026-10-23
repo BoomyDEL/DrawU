@@ -132,7 +132,7 @@ function escReto($dato) {
             <div class="reto-hero-top">
 
                 <div class="reto-hero-copy">
-                    <h1>Reto del día</h1>
+                    <h1 style="color: white">Reto del día</h1>
                     <p>
                         Consigue más <em>Drawings</em>
                         haciendo retos de dibujo diarios
@@ -165,7 +165,7 @@ function escReto($dato) {
 
             <article class="reto-card">
 
-                <h2>
+                <h2 style="color:white">
                     <?= escReto($retoDelDia['titulo']) ?>
                 </h2>
 
@@ -237,7 +237,7 @@ function escReto($dato) {
         <section class="reto-featured">
 
             <div class="reto-featured-head">
-                <h2>Destacados<br>de la semana</h2>
+                <h2 style="color:white">Destacados<br>de la semana</h2>
                 <p>
                     Dibujos con más likes publicados en los retos diarios
                 </p>
