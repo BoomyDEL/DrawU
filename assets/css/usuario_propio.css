@@ -525,3 +525,89 @@ a:focus-visible,
         flex-basis: 100%;
     }
 }
+
+
+/* ==========================================
+   MODO OSCURO (usuario_propio / usuario_externo)
+========================================== */
+
+body.oscuro {
+    background: #18181b;
+    color: #f1eff7;
+}
+
+body.oscuro .header {
+    background: #242429;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+body.oscuro .header-logo,
+body.oscuro .header-search,
+body.oscuro .header-coins,
+body.oscuro .header-icon {
+    background: #373740;
+    color: #f5f4fa;
+}
+
+body.oscuro .header-search input,
+body.oscuro .header-search button {
+    color: #f5f4fa;
+}
+
+body.oscuro .foto-perfil {
+    background: #29292e;
+    color: #cbbdff;
+}
+
+body.oscuro .tres-puntos {
+    color: #d0cddd;
+}
+
+body.oscuro .tres-puntos:hover {
+    background: #2c2c34;
+}
+
+body.oscuro .menu-foto,
+body.oscuro .menu-edicion,
+body.oscuro .menu-puntos {
+    background: #2c2c30;
+    border-color: #444;
+    color: #f1eff7;
+}
+
+body.oscuro .menu-foto button,
+body.oscuro .menu-edicion button,
+body.oscuro .menu-puntos button {
+    background: #3a3a40;
+    color: #f1eff7;
+}
+
+body.oscuro .menu-foto button:hover,
+body.oscuro .menu-edicion button:hover,
+body.oscuro .menu-puntos button:hover {
+    background: #484852;
+    color: #c4b5ff;
+}
+
+body.oscuro .publicacion {
+    background: #29292e;
+    color: #f1eff7;
+}
+
+body.oscuro .encabezado-publicacion {
+    color: #d0cddd;
+}
+
+body.oscuro .avatar-mini {
+    background: #44434b;
+    color: #fff;
+}
+
+body.oscuro .imagen-publicacion {
+    background: #363640;
+}
+
+body.oscuro .comunidad {
+    background: #2b2934;
+    border-color: #3f3c4c;
+}

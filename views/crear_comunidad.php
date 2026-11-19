@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/includes/app.php';
+requerirLogin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,8 +16,7 @@
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../assets/css/crear_comunidad.css">
-   
+    <link rel="stylesheet" href="../assets/css/crear_comunidad.css?v=<?= filemtime(__DIR__ . '/../assets/css/crear_comunidad.css') ?>">
 </head>
 <body>
 
@@ -73,7 +76,7 @@
     </main>
 
     <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
-    <script src="../assets/js/crear_comunidad.js"></script>
+    <script src="../assets/js/crear_comunidad.js?v=<?= filemtime(__DIR__ . '/../assets/js/crear_comunidad.js') ?>"></script>
     
     <?php include __DIR__ . '/includes/footer.php'; ?>
 </body>

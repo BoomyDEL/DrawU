@@ -1,3 +1,42 @@
+<?php
+require_once __DIR__ . '/includes/app.php';
+
+$usuario = requerirLogin();
+$yo = (int) $usuario['id_usuario'];
+
+$videosRaw = obtenerPublicaciones(['tipos' => ['video']], 30);
+$listaVideosJs = [];
+foreach ($videosRaw as $v) {
+    $esMio = ((int) $v['id_usuario'] === $yo);
+    $listaVideosJs[] = [
+        'id_publicacion' => (int) $v['id_publicacion'],
+        'id_usuario' => (int) $v['id_usuario'],
+        'usuario' => $v['nombre_usuario'],
+        'es_mio' => $esMio,
+        'url_perfil' => $esMio ? 'usuario_propio.php' : ('usuario_externo.php?id=' . (int) $v['id_usuario']),
+        'descripcion' => $v['descripcion'] ?: ($v['titulo'] ?: 'Video publicado en DrawU'),
+        'src' => url($v['ruta_video']),
+        'likes' => (int) $v['total_likes'],
+        'comentarios' => (int) $v['total_comentarios'],
+        'liked' => !empty($v['liked']),
+        'siguiendo' => !empty($v['siguiendo']),
+    ];
+}
+
+$primero = $listaVideosJs[0] ?? [
+    'id_publicacion' => 0,
+    'id_usuario' => 0,
+    'usuario' => $usuario['nombre_usuario'],
+    'es_mio' => true,
+    'url_perfil' => 'usuario_propio.php',
+    'descripcion' => 'Aún no hay videos publicados. ¡Sube el primero en Crear publicación!',
+    'src' => '',
+    'likes' => 0,
+    'comentarios' => 0,
+    'liked' => false,
+    'siguiendo' => false,
+];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +51,7 @@
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../assets/css/videos.css">
+    <link rel="stylesheet" href="../assets/css/videos.css?v=<?= filemtime(__DIR__ . '/../assets/css/videos.css') ?>">
 </head>
 <body>
 
@@ -20,8 +59,6 @@
     <?php include __DIR__ . '/includes/navbar.php'; ?>
 
     <div class="wave" aria-hidden="true"></div>
-
-
 
     <main class="layout">
         <section class="info">
@@ -32,56 +69,76 @@
                         <path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/>
                     </svg>
                 </div>
-                <a href="usuario_externo.php">Fulanito_detal</a>
-                <button class="seguir"  data-usuario="Fulanito_detal">Seguir</button>
+                <a href="<?= e($primero['url_perfil']) ?>" id="videoAutorLink"><?= e($primero['usuario']) ?></a>
+                <button
+                    class="seguir<?= $primero['siguiendo'] ? ' siguiendo' : '' ?>"
+                    id="videoBtnSeguir"
+                    data-user-id="<?= (int) $primero['id_usuario'] ?>"
+                    data-usuario="<?= e($primero['usuario']) ?>"
+                    style="<?= $primero['es_mio'] ? 'display:none;' : '' ?>"
+                ><?= $primero['siguiendo'] ? 'Siguiendo' : 'Seguir' ?></button>
             </div>
-            <div class="descripcion">Animación 2D viento</div>
+            <div class="descripcion" id="videoDescripcion"><?= e($primero['descripcion']) ?></div>
         </section>
+
         <section class="video-shell" id="videoShell">
             <video id="video" controls playsinline preload="metadata" aria-label="Video de la publicación"></video>
             <div class="placeholder">
                 <div>
-                    <strong>Vista previa del video</strong><span>Agrega la ruta de un archivo de video para mostrarlo aquí.</span>
+                    <strong>Vista previa del video</strong>
+                    <span>Sube un archivo de video desde "Crear publicación" para mostrarlo aquí.</span>
                 </div>
-            </div><button class="sonido" id="sonido" aria-label="Silenciar o activar sonido">🔇</button>
+            </div>
+            <button class="sonido" id="sonido" aria-label="Silenciar o activar sonido">🔇</button>
         </section>
+
         <div class="lateral">
-        <nav class="acciones" aria-label="Acciones del video">
-        <button class="accion" id="like" aria-label="Me gusta" aria-pressed="false">
-            <svg viewBox="0 0 24 24">
-                <path class="contorno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path class="relleno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="currentColor"/></svg><span id="likes">0</span></button>
-        <button class="accion" id="abrirComentarios" aria-label="Abrir comentarios" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span id="contadorComentarios">0</span></button>
-        <button class="accion" id="compartir" aria-label="Compartir video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></nav>
-        <div class="cambiar-video" aria-label="Cambiar de video">
-            <button class="flecha-video" id="videoAnterior" aria-label="Video anterior">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 15l8-8 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="flecha-video" id="videoSiguiente" aria-label="Video siguiente">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9l8 8 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-        </div>
+            <nav class="acciones" aria-label="Acciones del video">
+                <button class="accion<?= $primero['liked'] ? ' liked' : '' ?>" id="like" aria-label="Me gusta" aria-pressed="<?= $primero['liked'] ? 'true' : 'false' ?>">
+                    <svg viewBox="0 0 24 24">
+                        <path class="contorno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="none" stroke="currentColor" stroke-width="1.9"/>
+                        <path class="relleno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="currentColor"/>
+                    </svg>
+                    <span id="likes"><?= (int) $primero['likes'] ?></span>
+                </button>
+                <button class="accion" id="abrirComentarios" aria-label="Abrir comentarios" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg>
+                    <span id="contadorComentarios"><?= (int) $primero['comentarios'] ?></span>
+                </button>
+                <button class="accion" id="compartir" aria-label="Compartir video">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                </button>
+            </nav>
+            <div class="cambiar-video" aria-label="Cambiar de video">
+                <button class="flecha-video" id="videoAnterior" aria-label="Video anterior">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 15l8-8 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="flecha-video" id="videoSiguiente" aria-label="Video siguiente">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9l8 8 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </div>
         </div>
     </main>
 
-        <aside class="comentarios" id="panelComentarios" aria-hidden="true">
-            <div class="cabecera">
-                <span>Comentarios</span>
-                <button class="cerrar" id="cerrarComentarios" aria-label="Cerrar comentarios">×</button>
-            </div>
-            <div class="lista" id="listaComentarios" aria-live="polite">
-                <p class="vacio" id="sinComentarios">Todavía no hay comentarios. ¡Sé el primero!</p>
-            </div>
-            <form class="form-comentario" id="formComentario">
-                <input id="textoComentario" maxlength="500" placeholder="Escribe un comentario..." aria-label="Escribe un comentario" required>
-                <button type="submit">Publicar</button>
-            </form>
-        </aside>
+    <aside class="comentarios" id="panelComentarios" aria-hidden="true">
+        <div class="cabecera">
+            <span>Comentarios</span>
+            <button class="cerrar" id="cerrarComentarios" aria-label="Cerrar comentarios">×</button>
+        </div>
+        <div class="lista" id="listaComentarios" aria-live="polite">
+            <p class="vacio" id="sinComentarios">Todavía no hay comentarios. ¡Sé el primero!</p>
+        </div>
+        <form class="form-comentario" id="formComentario">
+            <input id="textoComentario" maxlength="500" placeholder="Escribe un comentario..." aria-label="Escribe un comentario" required>
+            <button type="submit">Publicar</button>
+        </form>
+    </aside>
 
-
-
-    
-
-    <script src="../assets/js/videos.js"></script>
+    <script>
+        window.DRAWU_VIDEOS = <?= json_encode($listaVideosJs, JSON_UNESCAPED_UNICODE) ?>;
+    </script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
+    <script src="../assets/js/videos.js?v=<?= filemtime(__DIR__ . '/../assets/js/videos.js') ?>"></script>
     <?php include __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

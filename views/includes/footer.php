@@ -5,7 +5,7 @@
  */
 $footerBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : 'views/';
 ?>
-<link rel="stylesheet" href="<?= $footerBase ?>includes/footer.css">
+<link rel="stylesheet" href="<?= $footerBase ?>includes/footer.css?v=<?= filemtime(__DIR__ . '/footer.css') ?>">
 
 <footer class="footer">
     <div class="footer-logo">Logo</div>

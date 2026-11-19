@@ -1,8 +1,42 @@
 <?php
 /**
  * Vista: monedas_cambio.php
- * Permite canjear estilos de mascota utilizando las monedas (Draws / Drawings).
+ * Permite canjear estilos de mascota utilizando las monedas (Draws / Drawings) guardadas en la BD.
  */
+require_once __DIR__ . '/includes/app.php';
+
+$usuario = requerirLogin();
+$yo = (int) $usuario['id_usuario'];
+$pdo = conexion();
+
+$stmtMascotas = $pdo->query(
+    "SELECT m.id_mascota, m.nombre, m.descripcion, m.ruta_imagen, m.color_tema,
+            COALESCE(a.precio_drawings, 0) AS precio
+     FROM mascotas m
+     LEFT JOIN articulos a ON a.id_mascota = m.id_mascota AND a.tipo = 'mascota' AND a.activo = TRUE
+     ORDER BY m.id_mascota ASC"
+);
+$catalogoMascotas = $stmtMascotas->fetchAll();
+
+$stmtDesbloq = $pdo->prepare('SELECT id_mascota FROM usuarios_mascotas WHERE id_usuario = ?');
+$stmtDesbloq->execute([$yo]);
+$desbloqueadas = array_map('intval', $stmtDesbloq->fetchAll(PDO::FETCH_COLUMN));
+if (!empty($usuario['id_mascota_activa']) && !in_array((int) $usuario['id_mascota_activa'], $desbloqueadas, true)) {
+    $desbloqueadas[] = (int) $usuario['id_mascota_activa'];
+}
+
+$preciosPorId = [];
+foreach ($catalogoMascotas as $m) {
+    $preciosPorId[(int) $m['id_mascota']] = (int) $m['precio'];
+}
+
+$estadoTiendaJs = [
+    'drawings' => (int) $usuario['drawings'],
+    'activa' => (int) ($usuario['id_mascota_activa'] ?: 1),
+    'desbloqueadas' => array_values(array_unique($desbloqueadas)),
+    'precios' => $preciosPorId,
+];
+
 $currentPage = 'monedas_cambio';
 ?>
 <!DOCTYPE html>
@@ -19,7 +53,7 @@ $currentPage = 'monedas_cambio';
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../assets/css/monedas_cambio.css">
+    <link rel="stylesheet" href="../assets/css/monedas_cambio.css?v=<?= filemtime(__DIR__ . '/../assets/css/monedas_cambio.css') ?>">
 </head>
 <body>
 
@@ -38,14 +72,13 @@ $currentPage = 'monedas_cambio';
                 <div class="top-header-left">
                     <h1 class="main-title">Disfruta</h1>
                     <p class="subtitle">de los estilos de<br>perfil que tenemos para ti</p>
-                    <a href="#" class="btn-conseguir-drawings" id="btnConseguirDrawings">¿Conseguir más Drawings?</a>
+                    <a href="reto_dia.php" class="btn-conseguir-drawings" id="btnConseguirDrawings">¿Conseguir más Drawings?</a>
                 </div>
 
                 <div class="top-header-right">
                     <div class="drawings-badge">
-                        <span class="drawings-circle-icon" aria-hidden="true"></span>
-                        <span class="drawings-text">Drawings</span>
-                        <span class="drawings-amount" id="drawingsBadgeCount">0</span>
+                        <h1 class="drawings-amount" id="drawingsBadgeCount"><?= (int) $usuario['drawings'] ?></h1>
+                        <h1 class="drawings-text">Drawings</h1>
                     </div>
                 </div>
             </section>
@@ -57,7 +90,7 @@ $currentPage = 'monedas_cambio';
             <div class="pet-styles-list">
 
                 <!-- Mascota 1: Dylan (Morado) -->
-                <article class="pet-card-row pet-row-morado right-aligned" data-pet-id="1" data-price="0" data-theme="">
+                <article class="pet-card-row pet-row-morado right-aligned" data-pet-id="1" data-price="<?= (int) ($preciosPorId[1] ?? 0) ?>" data-theme="">
                     <div class="pet-card-bar">
                         <!-- Personaje centrado en el espacio de color -->
                         <div class="pet-character-container">
@@ -76,7 +109,7 @@ $currentPage = 'monedas_cambio';
                             <span class="cost-coin-icon">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4c3.1 0 5.6-2.5 5.6-5.6C23 5.4 18 2 12 2zM6.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
                             </span>
-                            <span class="cost-val">0</span>
+                            <span class="cost-val"><?= (int) ($preciosPorId[1] ?? 0) ?></span>
                             <span class="cost-label">Draws</span>
                         </div>
                         <button type="button" class="btn-pet-action" data-pet-id="1">
@@ -92,7 +125,7 @@ $currentPage = 'monedas_cambio';
                 </article>
 
                 <!-- Mascota 2: Tommy (Azul / Aqua) -->
-                <article class="pet-card-row pet-row-aqua left-aligned" data-pet-id="2" data-price="50" data-theme="tema-aqua">
+                <article class="pet-card-row pet-row-aqua left-aligned" data-pet-id="2" data-price="<?= (int) ($preciosPorId[2] ?? 50) ?>" data-theme="tema-aqua">
                     <div class="pet-card-bar">
                         <!-- Personaje centrado en el espacio de color -->
                         <div class="pet-character-container">
@@ -111,7 +144,7 @@ $currentPage = 'monedas_cambio';
                             <span class="cost-coin-icon">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4c3.1 0 5.6-2.5 5.6-5.6C23 5.4 18 2 12 2zM6.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
                             </span>
-                            <span class="cost-val">50</span>
+                            <span class="cost-val"><?= (int) ($preciosPorId[2] ?? 50) ?></span>
                             <span class="cost-label">Draws</span>
                         </div>
                         <button type="button" class="btn-pet-action" data-pet-id="2">
@@ -127,7 +160,7 @@ $currentPage = 'monedas_cambio';
                 </article>
 
                 <!-- Mascota 3: Boomy (Verde) -->
-                <article class="pet-card-row pet-row-verde right-aligned" data-pet-id="3" data-price="100" data-theme="tema-verde">
+                <article class="pet-card-row pet-row-verde right-aligned" data-pet-id="3" data-price="<?= (int) ($preciosPorId[3] ?? 100) ?>" data-theme="tema-verde">
                     <div class="pet-card-bar">
                         <!-- Personaje centrado en el espacio de color -->
                         <div class="pet-character-container">
@@ -146,7 +179,7 @@ $currentPage = 'monedas_cambio';
                             <span class="cost-coin-icon">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4c3.1 0 5.6-2.5 5.6-5.6C23 5.4 18 2 12 2zM6.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
                             </span>
-                            <span class="cost-val">100</span>
+                            <span class="cost-val"><?= (int) ($preciosPorId[3] ?? 100) ?></span>
                             <span class="cost-label">Draws</span>
                         </div>
                         <button type="button" class="btn-pet-action" data-pet-id="3">
@@ -168,8 +201,9 @@ $currentPage = 'monedas_cambio';
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="../assets/js/monedas_cambio.js"></script>
-    <script src="../assets/js/navbar.js"></script>
+    <script>
+        window.DRAWU_TIENDA = <?= json_encode($estadoTiendaJs, JSON_UNESCAPED_UNICODE) ?>;
+    </script>
+    <script src="../assets/js/monedas_cambio.js?v=<?= filemtime(__DIR__ . '/../assets/js/monedas_cambio.js') ?>"></script>
 </body>
 </html>

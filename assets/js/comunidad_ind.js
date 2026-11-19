@@ -2,150 +2,94 @@
   "use strict";
 
   const pagina = document.getElementById("paginaComunidad");
-
   if (!pagina) return;
 
   const idComunidad = pagina.dataset.communityId;
+  let esMiembro = pagina.dataset.isMember === "1";
 
   const $ = (selector, root = document) => root.querySelector(selector);
-
-  const $$ = (selector, root = document) => [
-    ...root.querySelectorAll(selector),
-  ];
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   const feed = $("#listaPublicaciones");
-
-  const clavePosts = `drawu_com_${idComunidad}_posts`;
-
-  const claveLikes = `drawu_com_${idComunidad}_likes`;
-
-  const claveComentarios = `drawu_com_${idComunidad}_comentarios`;
-
-  const claveMiembros = "drawu_demo_comunidades_unidas";
-
-  const claveSeguidos = "drawu_demo_seguidos";
-
-  function leer(clave, inicial) {
-    try {
-      const dato = JSON.parse(localStorage.getItem(clave));
-      return dato ?? inicial;
-    } catch {
-      return inicial;
-    }
-  }
-
-  function guardar(clave, dato) {
-    try {
-      localStorage.setItem(clave, JSON.stringify(dato));
-
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  const miembros = new Set(leer(claveMiembros, []));
-  const seguidos = new Set(leer(claveSeguidos, []));
-  const likes = new Set(leer(claveLikes, []));
-  const comentarios = leer(claveComentarios, {});
-  const publicacionesLocales = leer(clavePosts, []);
-
   const aviso = $("#avisoComunidadInd");
-
   let timer;
 
   function notificar(texto) {
+    if (!aviso) return;
     aviso.textContent = texto;
     aviso.classList.add("visible");
-
     clearTimeout(timer);
-
     timer = setTimeout(() => {
       aviso.classList.remove("visible");
     }, 2700);
   }
 
+  // --- Unirse / Salir de la comunidad ---
   const btnUnirse = $("#btnUnirse");
+  const subtituloMiembros = $("#comunidadSubtituloMiembros");
 
-  function actualizarMiembro() {
-    const unido = miembros.has(idComunidad);
+  btnUnirse.addEventListener("click", async () => {
+    btnUnirse.disabled = true;
+    try {
+      const res = await window.drawuApi("comunidad.php", {
+        accion: "unirse",
+        id_comunidad: idComunidad,
+      });
+      esMiembro = Boolean(res.es_miembro);
+      pagina.dataset.isMember = esMiembro ? "1" : "0";
+      btnUnirse.textContent = esMiembro ? "Unido a la comunidad" : "Unirse a la comunidad";
+      btnUnirse.classList.toggle("unido", esMiembro);
+      btnUnirse.setAttribute("aria-pressed", String(esMiembro));
 
-    btnUnirse.textContent = unido
-      ? "Unido a la comunidad"
-      : "Unirse a la comunidad";
+      if (subtituloMiembros && typeof res.miembros === "number") {
+        const txt = `${res.miembros} ${res.miembros === 1 ? "miembro" : "miembros"} · Publicaciones de esta comunidad`;
+        subtituloMiembros.textContent = txt;
+      }
 
-    btnUnirse.classList.toggle("unido", unido);
-
-    btnUnirse.setAttribute("aria-pressed", String(unido));
-  }
-
-  btnUnirse.addEventListener("click", () => {
-    if (miembros.has(idComunidad)) {
-      miembros.delete(idComunidad);
-    } else {
-      miembros.add(idComunidad);
+      notificar(esMiembro ? "Te uniste a la comunidad." : "Saliste de la comunidad.");
+    } catch (err) {
+      notificar(err.message);
+    } finally {
+      btnUnirse.disabled = false;
     }
-
-    guardar(claveMiembros, [...miembros]);
-
-    actualizarMiembro();
-
-    notificar(
-      miembros.has(idComunidad)
-        ? "Te uniste a la comunidad (prueba)."
-        : "Saliste de la comunidad (prueba).",
-    );
   });
 
-  actualizarMiembro();
-
-  function actualizarSeguimientos() {
-    $$(".com-follow", feed).forEach((boton) => {
-      const activo = seguidos.has(boton.dataset.author);
-
-      boton.textContent = activo ? "Siguiendo" : "Seguir";
-
-      boton.classList.toggle("siguiendo", activo);
-
-      boton.setAttribute("aria-pressed", String(activo));
-    });
-  }
-
-  feed.addEventListener("click", (e) => {
+  // --- Seguir usuario ---
+  feed.addEventListener("click", async (e) => {
     const boton = e.target.closest(".com-follow");
-
     if (!boton) return;
 
-    const usuario = boton.dataset.author;
+    const idUsuario = boton.dataset.userId;
+    const nombreUsuario = boton.dataset.author || "usuario";
+    if (!idUsuario) return;
 
-    if (seguidos.has(usuario)) {
-      seguidos.delete(usuario);
-    } else {
-      seguidos.add(usuario);
+    try {
+      const res = await window.drawuApi("seguir.php", { id_usuario: idUsuario });
+      $$(`.com-follow[data-user-id="${idUsuario}"]`, feed).forEach((b) => {
+        b.textContent = res.siguiendo ? "Siguiendo" : "Seguir";
+        b.classList.toggle("siguiendo", res.siguiendo);
+        b.setAttribute("aria-pressed", String(res.siguiendo));
+      });
+      notificar(
+        res.siguiendo
+          ? `Ahora sigues a ${nombreUsuario}.`
+          : `Dejaste de seguir a ${nombreUsuario}.`
+      );
+    } catch (err) {
+      notificar(err.message);
     }
-
-    guardar(claveSeguidos, [...seguidos]);
-
-    actualizarSeguimientos();
-
-    notificar(
-      seguidos.has(usuario)
-        ? `Ahora sigues a ${usuario}.`
-        : `Dejaste de seguir a ${usuario}.`,
-    );
   });
 
+  // --- Crear publicación en esta comunidad ---
   const form = $("#formPublicacionComunidad");
   const texto = $("#textoPublicacion");
   const archivo = $("#imagenPublicacion");
 
   $("#btnAbrirPublicacion").addEventListener("click", () => {
-    if (!miembros.has(idComunidad)) {
+    if (!esMiembro) {
       notificar("Primero únete a la comunidad para publicar.");
-
       return;
     }
-
     form.hidden = false;
     texto.focus();
   });
@@ -154,189 +98,6 @@
     form.hidden = true;
     form.reset();
   });
-
-  function tarjetaDePublicacion(post) {
-    const art = document.createElement("article");
-
-    art.className = "com-post";
-    art.dataset.postId = post.id;
-
-    art.innerHTML = `
-
-    <!-- ENCABEZADO -->
-    <header class="com-post-header">
-
-        <a
-            href="usuario_propio.php"
-            class="com-post-avatar"
-            aria-label="Ver perfil"
-        >
-            <svg aria-hidden="true">
-                <use href="#com-icon-user"></use>
-            </svg>
-        </a>
-
-        <a
-            href="usuario_propio.php"
-            class="com-post-author"
-        ></a>
-
-        <button
-            type="button"
-            class="com-follow"
-            aria-pressed="false"
-        >
-            Seguir
-        </button>
-
-    </header>
-
-
-    <!-- DESCRIPCIÓN -->
-    <p class="com-post-text"></p>
-
-
-    <!-- ACCIONES -->
-    <footer class="com-post-actions">
-
-        <!-- ME GUSTA -->
-        <button
-            type="button"
-            class="com-like"
-            data-action="like"
-            aria-label="Me gusta"
-            aria-pressed="false"
-        >
-            <svg class="com-icon" aria-hidden="true">
-                <use href="#com-icon-heart"></use>
-            </svg>
-
-            <span>0</span>
-        </button>
-
-
-        <!-- COMENTARIOS -->
-        <button
-            type="button"
-            data-action="comment"
-            aria-label="Abrir comentarios"
-        >
-            <svg class="com-icon" aria-hidden="true">
-                <use href="#com-icon-comment"></use>
-            </svg>
-
-            <span>0</span>
-        </button>
-
-
-        <!-- COMPARTIR -->
-        <button
-            type="button"
-            data-action="share"
-            aria-label="Compartir publicación"
-        >
-            <svg class="com-icon" aria-hidden="true">
-                <use href="#com-icon-share"></use>
-            </svg>
-        </button>
-
-    </footer>
-`;
-
-    const nombreAutor = art.querySelector(".com-post-author");
-
-    const botonSeguir = art.querySelector(".com-follow");
-
-    nombreAutor.textContent = post.autor;
-
-    const rutaPerfil =
-      post.autor === "Tú" ? "usuario_propio.php" : "usuario_externo.php";
-
-    nombreAutor.href = rutaPerfil;
-
-    art.querySelector(".com-post-avatar").href = rutaPerfil;
-
-    botonSeguir.dataset.author = post.autor;
-
-    const descripcion = art.querySelector(".com-post-text");
-
-    if (post.texto && post.texto.trim()) {
-      descripcion.textContent = post.texto;
-    } else {
-      // No mostrar espacio si no hay descripción
-      descripcion.remove();
-    }
-
-    if (post.imagen) {
-      const contenedorImagen = document.createElement("div");
-
-      contenedorImagen.className = "com-post-image";
-
-      const imagen = document.createElement("img");
-
-      imagen.src = post.imagen;
-      imagen.alt = "Imagen de la publicación";
-      imagen.loading = "lazy";
-
-      imagen.addEventListener("error", () => {
-        imagen.hidden = true;
-      });
-
-      contenedorImagen.appendChild(imagen);
-      const acciones = art.querySelector(".com-post-actions");
-
-      art.insertBefore(contenedorImagen, acciones);
-    }
-
-    return art;
-  }
-
-  publicacionesLocales
-    .slice()
-    .reverse()
-    .forEach((post) => {
-      feed.prepend(tarjetaDePublicacion(post));
-    });
-
-  function actualizarAcciones() {
-    $$(".com-post", feed).forEach((post) => {
-      const clave = post.dataset.postId;
-
-      const like = $(".com-like", post);
-
-      const liked = likes.has(clave);
-
-      like.classList.toggle("liked", liked);
-
-      like.setAttribute("aria-pressed", String(liked));
-
-      $("span", like).textContent = liked ? "1" : "0";
-
-      $('[data-action="comment"] span', post).textContent = (
-        comentarios[clave] || []
-      ).length;
-    });
-
-    $("#comSinPublicaciones").hidden = $$(".com-post", feed).length !== 0;
-
-    actualizarSeguimientos();
-  }
-
-  function leerImagen(file) {
-    return new Promise((resolver, rechazar) => {
-      const lector = new FileReader();
-
-      lector.onload = () => {
-        resolver(lector.result);
-      };
-
-      lector.onerror = () => {
-        rechazar(new Error("No se pudo leer la imagen"));
-      };
-
-      lector.readAsDataURL(file);
-    });
-  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -348,82 +109,46 @@
       return notificar("Escribe un texto o selecciona una imagen.");
     }
 
-    if (
-      file &&
-      (!["image/png", "image/jpeg", "image/webp"].includes(file.type) ||
-        file.size > 250 * 1024)
-    ) {
-      return notificar("Usa JPG, PNG o WebP de máximo 250 KB.");
+    const datos = new FormData();
+    datos.append("modo", "normal");
+    datos.append("id_comunidad", idComunidad);
+    datos.append("descripcion", contenido);
+    if (file) {
+      datos.append("archivo", file);
     }
 
-    let imagen = "";
+    const btnSubmit = form.querySelector('[type="submit"]');
+    btnSubmit.disabled = true;
 
     try {
-      if (file) {
-        imagen = await leerImagen(file);
-      }
-    } catch {
-      return notificar("No se pudo leer la imagen.");
+      await window.drawuApi("publicacion.php", datos);
+      window.location.reload();
+    } catch (err) {
+      notificar(err.message);
+      btnSubmit.disabled = false;
     }
-
-    const post = {
-      id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-
-      autor: "Tú",
-
-      texto: contenido,
-
-      imagen,
-    };
-
-    publicacionesLocales.unshift(post);
-
-    feed.prepend(tarjetaDePublicacion(post));
-
-    if (!guardar(clavePosts, publicacionesLocales)) {
-      notificar(
-        "Publicación visible, pero no se pudo guardar en este navegador.",
-      );
-    } else {
-      notificar("Publicación creada en esta comunidad (prueba).");
-    }
-
-    form.reset();
-    form.hidden = true;
-
-    actualizarAcciones();
   });
 
+  // --- Comentarios ---
   const fondo = $("#fondoComentariosCom");
-
   const listaComentarios = $("#listaComentariosCom");
-
   const inputComentario = $("#textoComentarioCom");
-
   let postActivo = null;
 
-  function pintarComentarios() {
+  function renderComentarios(elementos) {
     listaComentarios.replaceChildren();
-
-    const elementos = comentarios[postActivo] || [];
-
-    if (!elementos.length) {
+    if (!elementos || !elementos.length) {
       const p = document.createElement("p");
-
       p.textContent = "Todavía no hay comentarios.";
-
       listaComentarios.appendChild(p);
+      return;
     }
 
-    elementos.forEach((mensaje) => {
+    elementos.forEach((item) => {
       const p = document.createElement("p");
-
       const autor = document.createElement("strong");
-
-      autor.textContent = "Tú";
-
-      p.append(autor, document.createTextNode(mensaje));
-
+      autor.textContent = item.usuario || "Usuario";
+      p.append(autor, document.createTextNode(item.contenido || ""));
       listaComentarios.appendChild(p);
     });
   }
@@ -450,42 +175,38 @@
 
   feed.addEventListener("click", async (e) => {
     const boton = e.target.closest("[data-action]");
-
     if (!boton) return;
 
     const post = boton.closest(".com-post");
+    const idPost = post.dataset.postId;
 
-    const clave = post.dataset.postId;
-
-    // Me gusta
     if (boton.dataset.action === "like") {
-      if (likes.has(clave)) {
-        likes.delete(clave);
-      } else {
-        likes.add(clave);
+      try {
+        const res = await window.drawuApi("like.php", { id_publicacion: idPost });
+        boton.classList.toggle("liked", res.liked);
+        boton.setAttribute("aria-pressed", String(res.liked));
+        const span = $("span", boton);
+        if (span) span.textContent = String(res.total);
+      } catch (err) {
+        notificar(err.message);
       }
-
-      guardar(claveLikes, [...likes]);
-
-      actualizarAcciones();
-    }
-
-    // Comentarios
-    else if (boton.dataset.action === "comment") {
-      postActivo = clave;
-
-      pintarComentarios();
-
+    } else if (boton.dataset.action === "comment") {
+      postActivo = idPost;
+      listaComentarios.replaceChildren();
       fondo.hidden = false;
-
       inputComentario.focus();
-    }
 
-    // Compartir
-    else if (boton.dataset.action === "share") {
+      try {
+        const res = await window.drawuApi("comentarios.php", { id_publicacion: idPost }, "GET");
+        if (postActivo === idPost) {
+          renderComentarios(res.comentarios);
+        }
+      } catch (err) {
+        notificar(err.message);
+      }
+    } else if (boton.dataset.action === "share") {
       try {
         await navigator.clipboard.writeText(window.location.href);
-
         notificar("Enlace de comunidad copiado.");
       } catch {
         notificar("Copia la dirección de la comunidad desde el navegador.");
@@ -493,29 +214,27 @@
     }
   });
 
-  $("#formComentariosCom").addEventListener("submit", (e) => {
+  $("#formComentariosCom").addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const valor = inputComentario.value.trim();
-
     if (!valor || !postActivo) return;
 
-    if (!comentarios[postActivo]) {
-      comentarios[postActivo] = [];
+    try {
+      const res = await window.drawuApi("comentarios.php", {
+        id_publicacion: postActivo,
+        contenido: valor,
+      });
+      inputComentario.value = "";
+      renderComentarios(res.comentarios);
+
+      const postEl = $(`.com-post[data-post-id="${postActivo}"]`, feed);
+      if (postEl) {
+        const span = $('[data-action="comment"] span', postEl);
+        if (span) span.textContent = String(res.total);
+      }
+      notificar("Comentario publicado.");
+    } catch (err) {
+      notificar(err.message);
     }
-
-    comentarios[postActivo].push(valor);
-
-    guardar(claveComentarios, comentarios);
-
-    inputComentario.value = "";
-
-    pintarComentarios();
-
-    actualizarAcciones();
-
-    notificar("Comentario agregado (prueba).");
   });
-
-  actualizarAcciones();
 })();

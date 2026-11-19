@@ -5,126 +5,58 @@
   if (!pagina) return;
 
   const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-  const $$ = (selector, root = document) => [
-    ...root.querySelectorAll(selector),
-  ];
-
-  const idReto = pagina.dataset.retoId || "reto-del-dia";
-
-  const claveLikes = `drawu_demo_${idReto}_likes`;
-  const claveComentarios = `drawu_demo_${idReto}_comentarios`;
-  const claveSeguidos = "drawu_demo_seguidos";
-
-  function leerDatos(clave, porDefecto) {
-    try {
-      const valor = localStorage.getItem(clave);
-      return valor === null ? porDefecto : JSON.parse(valor);
-    } catch {
-      return porDefecto;
-    }
-  }
-
-  function guardarDatos(clave, valor) {
-    try {
-      localStorage.setItem(clave, JSON.stringify(valor));
-    } catch {
-      return false;
-    }
-    return true;
-  }
-
-  // ======================================
   // Ocultar imágenes que no existan
-  // ======================================
   $$("img[data-asset-opcional]", pagina).forEach((img) => {
     function ocultarImagen() {
       img.style.display = "none";
     }
-
     img.addEventListener("error", ocultarImagen);
-
     if (img.complete && img.naturalWidth === 0) {
       ocultarImagen();
     }
   });
 
-  // ======================================
   // Toast
-  // ======================================
   const aviso = $("#retoAviso");
   let timerAviso;
 
   function mostrarAviso(mensaje) {
     if (!aviso) return;
-
     aviso.textContent = mensaje;
     aviso.classList.add("visible");
-
     clearTimeout(timerAviso);
-
     timerAviso = setTimeout(() => {
       aviso.classList.remove("visible");
     }, 2600);
   }
 
-  const seguidos = new Set(leerDatos(claveSeguidos, []));
-
-  function actualizarSeguimientos() {
-    $$(".reto-follow", pagina).forEach((boton) => {
-      const usuario = boton.dataset.author;
-      const siguiendo = seguidos.has(usuario);
-
-      boton.textContent = siguiendo ? "Siguiendo" : "Seguir";
-      boton.classList.toggle("siguiendo", siguiendo);
-      boton.setAttribute("aria-pressed", String(siguiendo));
-    });
-  }
-
-  pagina.addEventListener("click", (evento) => {
+  // Seguir usuario en BD
+  pagina.addEventListener("click", async (evento) => {
     const boton = evento.target.closest(".reto-follow");
     if (!boton) return;
 
-    const usuario = boton.dataset.author;
+    const idUsuario = boton.dataset.userId;
+    const usuario = boton.dataset.author || "usuario";
+    if (!idUsuario) return;
 
-    if (seguidos.has(usuario)) {
-      seguidos.delete(usuario);
-    } else {
-      seguidos.add(usuario);
+    try {
+      const res = await window.drawuApi("seguir.php", { id_usuario: idUsuario });
+      $$(`.reto-follow[data-user-id="${idUsuario}"]`, pagina).forEach((b) => {
+        b.textContent = res.siguiendo ? "Siguiendo" : "Seguir";
+        b.classList.toggle("siguiendo", res.siguiendo);
+        b.setAttribute("aria-pressed", String(res.siguiendo));
+      });
+      mostrarAviso(
+        res.siguiendo ? `Ahora sigues a ${usuario}` : `Dejaste de seguir a ${usuario}`
+      );
+    } catch (err) {
+      mostrarAviso(err.message);
     }
-
-    guardarDatos(claveSeguidos, [...seguidos]);
-    actualizarSeguimientos();
-
-    mostrarAviso(
-      seguidos.has(usuario)
-        ? `Ahora sigues a ${usuario} (prueba)`
-        : `Dejaste de seguir a ${usuario} (prueba)`,
-    );
   });
 
-  actualizarSeguimientos();
-
-  const likes = new Set(leerDatos(claveLikes, []));
-
-  function actualizarLikes() {
-    $$("[data-action='like']", pagina).forEach((boton) => {
-      const postId = boton.dataset.postId;
-      const activo = likes.has(postId);
-      const contador = $("span", boton);
-
-      boton.classList.toggle("liked", activo);
-      boton.setAttribute("aria-pressed", String(activo));
-
-      if (contador) {
-        contador.textContent = activo ? "1" : "0";
-      }
-    });
-  }
-
-  actualizarLikes();
-
-  const comentarios = leerDatos(claveComentarios, {});
+  // Comentarios
   const fondo = $("#retoComentariosFondo");
   const lista = $("#retoListaComentarios");
   const formulario = $("#retoFormularioComentario");
@@ -133,22 +65,9 @@
 
   let publicacionActual = null;
 
-  function actualizarContadoresComentarios() {
-    $$("[data-action='comment']", pagina).forEach((boton) => {
-      const postId = boton.dataset.postId;
-      const contador = $("span", boton);
-      const total = (comentarios[postId] || []).length;
-
-      if (contador) contador.textContent = total;
-    });
-  }
-
-  function pintarComentarios() {
+  function pintarComentarios(items) {
     lista.replaceChildren();
-
-    const items = comentarios[publicacionActual] || [];
-
-    if (items.length === 0) {
+    if (!items || items.length === 0) {
       const vacio = document.createElement("p");
       vacio.className = "reto-comments-empty";
       vacio.textContent = "Todavía no hay comentarios.";
@@ -156,24 +75,30 @@
       return;
     }
 
-    items.forEach((texto) => {
+    items.forEach((item) => {
       const p = document.createElement("p");
       const strong = document.createElement("strong");
-
-      strong.textContent = "Usuario";
-
-      p.append(strong, document.createTextNode(texto));
-
+      strong.textContent = item.usuario || "Usuario";
+      p.append(strong, document.createTextNode(item.contenido || ""));
       lista.appendChild(p);
     });
   }
 
-  function abrirComentarios(idPost) {
+  async function abrirComentarios(idPost) {
     publicacionActual = idPost;
     fondo.hidden = false;
     document.body.style.overflow = "hidden";
-    pintarComentarios();
+    lista.replaceChildren();
     input.focus();
+
+    try {
+      const res = await window.drawuApi("comentarios.php", { id_publicacion: idPost }, "GET");
+      if (publicacionActual === idPost) {
+        pintarComentarios(res.comentarios);
+      }
+    } catch (err) {
+      mostrarAviso(err.message);
+    }
   }
 
   function cerrarComentarios() {
@@ -197,28 +122,28 @@
     }
   });
 
-  formulario.addEventListener("submit", (evento) => {
+  formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
-
     const texto = input.value.trim();
     if (!texto || !publicacionActual) return;
 
-    if (!comentarios[publicacionActual]) {
-      comentarios[publicacionActual] = [];
+    try {
+      const res = await window.drawuApi("comentarios.php", {
+        id_publicacion: publicacionActual,
+        contenido: texto,
+      });
+      input.value = "";
+      pintarComentarios(res.comentarios);
+
+      $$(`[data-action='comment'][data-post-id='${publicacionActual}']`, pagina).forEach((boton) => {
+        const contador = $("span", boton);
+        if (contador) contador.textContent = String(res.total);
+      });
+      mostrarAviso("Comentario publicado");
+    } catch (err) {
+      mostrarAviso(err.message);
     }
-
-    comentarios[publicacionActual].push(texto);
-
-    guardarDatos(claveComentarios, comentarios);
-    input.value = "";
-
-    pintarComentarios();
-    actualizarContadoresComentarios();
-
-    mostrarAviso("Comentario agregado (prueba)");
   });
-
-  actualizarContadoresComentarios();
 
   pagina.addEventListener("click", async (evento) => {
     const boton = evento.target.closest("[data-action]");
@@ -228,20 +153,18 @@
     const postId = boton.dataset.postId;
 
     if (accion === "like") {
-      if (likes.has(postId)) {
-        likes.delete(postId);
-      } else {
-        likes.add(postId);
+      try {
+        const res = await window.drawuApi("like.php", { id_publicacion: postId });
+        $$(`[data-action='like'][data-post-id='${postId}']`, pagina).forEach((b) => {
+          b.classList.toggle("liked", res.liked);
+          b.setAttribute("aria-pressed", String(res.liked));
+          const span = $("span", b);
+          if (span) span.textContent = String(res.total);
+        });
+        mostrarAviso(res.liked ? "Me gusta agregado" : "Me gusta retirado");
+      } catch (err) {
+        mostrarAviso(err.message);
       }
-
-      guardarDatos(claveLikes, [...likes]);
-      actualizarLikes();
-
-      mostrarAviso(
-        likes.has(postId)
-          ? "Me gusta agregado (prueba)"
-          : "Me gusta retirado (prueba)",
-      );
     } else if (accion === "comment") {
       abrirComentarios(postId);
     } else if (accion === "share") {

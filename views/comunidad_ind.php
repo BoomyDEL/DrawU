@@ -1,112 +1,47 @@
-
-
 <?php
-// Datos de demostración, sin conexión a base de datos.
-$comunidades = [
-    'boomy' => [
-        'nombre' => 'Boom día, Boomy!',
-        'descripcion' => 'Un espacio para compartir aventuras, personajes y dibujos del mundo de Boomy.',
-        'portada' => '../assets/img/comunidades/boomy_lentes.png',
-        'miembros' => '67 mil miembros'
-    ],
-    'redisenos' => [
-        'nombre' => 'Rediseño de personajes',
-        'descripcion' => 'Muestra tus rediseños, personajes originales y procesos creativos.',
-        'portada' => '../assets/img/comunidades/LSS_Lilly.png',
-        'miembros' => 'Comunidad creativa'
-    ],
-    'arte' => [
-        'nombre' => 'Arte y color',
-        'descripcion' => 'Ilustración, técnicas, colores e inspiración para artistas.',
-        'portada' => '../assets/img/comunidades/hermanitos.png',
-        'miembros' => 'Comunidad creativa'
-    ],
-    'noobs' => [
-        'nombre' => 'Noobs del dibujo',
-        'descripcion' => 'Aprendemos a dibujar y compartimos nuestros avances.',
-        'portada' => '../assets/img/comunidades/claro_oscuro.png',
-        'miembros' => 'Comunidad de aprendizaje'
-    ],
-    'lss' => [
-        'nombre' => 'Little Silly Singer',
-        'descripcion' => 'Dibujos y personajes inspirados en Little Silly Singer.',
-        'portada' => '../assets/img/comunidades/LSS_Lilly.png',
-        'miembros' => 'Comunidad creativa'
-    ]
-];
+require_once __DIR__ . '/includes/app.php';
 
-// Cada publicación pertenece a una comunidad específica.
-$publicaciones = [
-    [
-        'id' => 'ejemplo-1',
-        'comunidad' => 'boomy',
-        'autor' => 'Fulanito_detal',
-        'texto' => 'Mi ilustración de hoy. ¿Qué les parece?',
-        'imagen' => '../assets/img/publis/Luke.png'
-    ],
-    [
-        'id' => 'ejemplo-2',
-        'comunidad' => 'boomy',
-        'autor' => 'Usuario',
-        'texto' => 'Comparto otro dibujo con la comunidad.',
-        'imagen' => '../assets/img/publis/visemas_lilly.png'
-    ],
-    [
-        'id' => 'ejemplo-3',
-        'comunidad' => 'redisenos',
-        'autor' => 'Usuario',
-        'texto' => 'Probando un nuevo estilo de personaje.',
-        'imagen' => '../assets/img/publis/visemas_lilly.png'
-    ],
-    [
-        'id' => 'ejemplo-4',
-        'comunidad' => 'arte',
-        'autor' => 'Fulanito_detal',
-        'texto' => 'Práctica de color e iluminación.',
-        'imagen' => '../assets/img/publis/Luke.png'
-    ],
-    [
-        'id' => 'ejemplo-5',
-        'comunidad' => 'noobs',
-        'autor' => 'Usuario',
-        'texto' => 'Mi práctica de dibujo de hoy.',
-        'imagen' => '../assets/img/publis/Luke.png'
-    ],
-    [
-        'id' => 'ejemplo-6',
-        'comunidad' => 'lss',
-        'autor' => 'Usuario',
-        'texto' => 'Compartiendo fanart de Little Silly Singer.',
-        'imagen' => '../assets/img/publis/visemas_lilly.png'
-    ]
-];
+$usuario = requerirLogin();
+$yo = (int) $usuario['id_usuario'];
+$pdo = conexion();
 
-// Obtener la comunidad seleccionada en la URL.
-$idComunidad = (string) ($_GET['id'] ?? 'boomy');
+$paramId = trim((string) ($_GET['id'] ?? ''));
 
-if (!isset($comunidades[$idComunidad])) {
+$sqlCom = 'SELECT c.*,
+                  (SELECT COUNT(*) FROM comunidades_usuarios cu WHERE cu.id_comunidad = c.id_comunidad) AS total_miembros,
+                  EXISTS (SELECT 1 FROM comunidades_usuarios cu2 WHERE cu2.id_comunidad = c.id_comunidad AND cu2.id_usuario = :yo) AS es_miembro
+           FROM comunidades c
+           WHERE ';
+if ($paramId === '') {
+    $sqlCom .= '1=1 ORDER BY c.id_comunidad ASC LIMIT 1';
+    $stmt = $pdo->prepare($sqlCom);
+    $stmt->execute([':yo' => $yo]);
+} elseif (ctype_digit($paramId)) {
+    $sqlCom .= 'c.id_comunidad = :id LIMIT 1';
+    $stmt = $pdo->prepare($sqlCom);
+    $stmt->execute([':yo' => $yo, ':id' => (int) $paramId]);
+} else {
+    $sqlCom .= 'c.slug = :slug LIMIT 1';
+    $stmt = $pdo->prepare($sqlCom);
+    $stmt->execute([':yo' => $yo, ':slug' => $paramId]);
+}
+
+$comunidadActual = $stmt->fetch();
+if (!$comunidadActual) {
     http_response_code(404);
-
-    exit(
-        'Comunidad no encontrada. ' .
-        '<a href="explorar_comunidades.php">Volver a comunidades</a>'
-    );
+    exit('Comunidad no encontrada. <a href="explorar_comunidades.php">Volver a comunidades</a>');
 }
 
-$comunidadActual = $comunidades[$idComunidad];
+$idComunidadNum = (int) $comunidadActual['id_comunidad'];
+$slugActual = $comunidadActual['slug'];
+$esMiembro = !empty($comunidadActual['es_miembro']);
+$portada = url($comunidadActual['imagen_banner'] ?: $comunidadActual['imagen_perfil'] ?: 'assets/img/comunidades/boomy_lentes.png');
+$avatarCom = url($comunidadActual['imagen_perfil'] ?: $comunidadActual['imagen_banner'] ?: 'assets/img/comunidades/boomy_lentes.png');
+$miembrosTexto = plural((int) $comunidadActual['total_miembros'], 'miembro', 'miembros');
 
-// Mostrar solamente publicaciones de esta comunidad.
-$publicacionesActuales = array_values(array_filter(
-    $publicaciones,
-    fn($post) => $post['comunidad'] === $idComunidad
-));
-
-// Evitar que los textos se interpreten como HTML.
-function esc($dato) {
-    return htmlspecialchars((string) $dato, ENT_QUOTES, 'UTF-8');
-}
+$todasComunidades = obtenerComunidades(['limite' => 10]);
+$publicacionesActuales = obtenerPublicaciones(['id_comunidad' => $idComunidadNum], 40);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -114,7 +49,7 @@ function esc($dato) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title><?= esc($comunidadActual['nombre']) ?> | DrawU</title>
+    <title><?= e($comunidadActual['titulo']) ?> | DrawU</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -122,9 +57,7 @@ function esc($dato) {
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-
-
-    <link rel="stylesheet" href="../assets/css/comunidad_ind.css">
+    <link rel="stylesheet" href="../assets/css/comunidad_ind.css?v=<?= filemtime(__DIR__ . '/../assets/css/comunidad_ind.css') ?>">
 </head>
 
 <body class="comunidad-ind-page">
@@ -135,7 +68,9 @@ function esc($dato) {
     <main
         class="com-page"
         id="paginaComunidad"
-        data-community-id="<?= esc($idComunidad) ?>"
+        data-community-id="<?= $idComunidadNum ?>"
+        data-community-slug="<?= e($slugActual) ?>"
+        data-is-member="<?= $esMiembro ? '1' : '0' ?>"
     >
 
         <!-- RUTA DE NAVEGACIÓN -->
@@ -150,19 +85,17 @@ function esc($dato) {
                 <span aria-hidden="true">/</span>
 
                 <span>
-                    <?= esc($comunidadActual['nombre']) ?>
+                    <?= e($comunidadActual['titulo']) ?>
                 </span>
 
             </nav>
 
         </div>
 
-
         <section class="com-banner" aria-label="Portada de la comunidad">
 
-
             <img
-                src="<?= esc($comunidadActual['portada']) ?>"
+                src="<?= e($portada) ?>"
                 alt=""
                 onerror="this.hidden=true"
             >
@@ -171,16 +104,14 @@ function esc($dato) {
 
         </section>
 
-
         <div class="com-container">
-
 
             <section class="com-identity">
 
                 <div class="com-avatar">
 
                     <img
-                        src="<?= esc($comunidadActual['portada']) ?>"
+                        src="<?= e($avatarCom) ?>"
                         alt=""
                         onerror="this.hidden=true"
                     >
@@ -191,55 +122,50 @@ function esc($dato) {
 
                 </div>
 
-
                 <div class="com-description">
 
                     <h1>
-                        <?= esc($comunidadActual['nombre']) ?>
+                        <?= e($comunidadActual['titulo']) ?>
                     </h1>
 
                     <p>
-                        <?= esc($comunidadActual['descripcion']) ?>
+                        <?= e($comunidadActual['descripcion'] ?: 'Comunidad creativa de DrawU.') ?>
                     </p>
 
-                    <small>
-                        <?= esc($comunidadActual['miembros']) ?>
+                    <small id="comunidadSubtituloMiembros">
+                        <?= e($miembrosTexto) ?>
                         · Publicaciones de esta comunidad
                     </small>
 
                 </div>
 
-
                 <button
-                    class="com-btn com-btn-join"
+                    class="com-btn com-btn-join<?= $esMiembro ? ' unido' : '' ?>"
                     id="btnUnirse"
                     type="button"
-                    aria-pressed="false"
+                    aria-pressed="<?= $esMiembro ? 'true' : 'false' ?>"
                 >
-                    Unirse a la comunidad
+                    <?= $esMiembro ? 'Unido a la comunidad' : 'Unirse a la comunidad' ?>
                 </button>
 
             </section>
 
-
             <nav class="com-others" aria-label="Cambiar de comunidad">
 
-                <?php foreach ($comunidades as $slug => $datos): ?>
+                <?php foreach ($todasComunidades as $datos): ?>
 
                     <a
-                        href="comunidad_ind.php?id=<?= urlencode($slug) ?>"
-                        <?= $slug === $idComunidad
+                        href="comunidad_ind.php?id=<?= urlencode($datos['slug']) ?>"
+                        <?= $datos['slug'] === $slugActual
                             ? 'aria-current="page"'
                             : '' ?>
                     >
-                        <?= esc($datos['nombre']) ?>
+                        <?= e($datos['titulo']) ?>
                     </a>
 
                 <?php endforeach; ?>
 
             </nav>
-
-
 
             <section
                 class="com-main-section"
@@ -262,7 +188,6 @@ function esc($dato) {
 
                 </div>
 
-
                 <form
                     id="formPublicacionComunidad"
                     class="com-compose"
@@ -271,7 +196,7 @@ function esc($dato) {
 
                     <h3>
                         Nueva publicación en
-                        <?= esc($comunidadActual['nombre']) ?>
+                        <?= e($comunidadActual['titulo']) ?>
                     </h3>
 
                     <label for="textoPublicacion">
@@ -286,18 +211,17 @@ function esc($dato) {
                     ></textarea>
 
                     <label for="imagenPublicacion">
-                        Imagen opcional (máximo 250 KB)
+                        Imagen opcional
                     </label>
 
                     <input
                         type="file"
                         id="imagenPublicacion"
-                        accept="image/png,image/jpeg,image/webp"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
                     >
 
                     <p class="com-helper">
-                        Sin SQL: esta publicación de prueba se guarda
-                        en tu navegador.
+                        Tu publicación se guardará directamente en la comunidad.
                     </p>
 
                     <div class="com-compose-actions">
@@ -317,7 +241,6 @@ function esc($dato) {
                     </div>
 
                 </form>
-
 
                 <svg
                     class="com-icons-sprite"
@@ -347,7 +270,6 @@ function esc($dato) {
 
                     </symbol>
 
-
                     <!-- ICONO DE CORAZÓN -->
                     <symbol id="com-icon-heart" viewBox="0 0 24 24">
 
@@ -361,7 +283,6 @@ function esc($dato) {
 
                     </symbol>
 
-
                     <!-- ICONO DE COMENTARIOS -->
                     <symbol id="com-icon-comment" viewBox="0 0 24 24">
 
@@ -374,7 +295,6 @@ function esc($dato) {
                         />
 
                     </symbol>
-
 
                     <!-- ICONO DE COMPARTIR -->
                     <symbol id="com-icon-share" viewBox="0 0 24 24">
@@ -398,18 +318,21 @@ function esc($dato) {
 
                 </svg>
 
-
-                <!-- =====================================
-                     PUBLICACIONES DE LA COMUNIDAD
-                ====================================== -->
-
+                <!-- PUBLICACIONES DE LA COMUNIDAD -->
                 <div class="com-post-grid" id="listaPublicaciones">
 
-                    <?php foreach ($publicacionesActuales as $post): ?>
+                    <?php foreach ($publicacionesActuales as $post):
+                        $esMio = ((int) $post['id_usuario'] === $yo);
+                        $urlPerfil = $esMio ? 'usuario_propio.php' : ('usuario_externo.php?id=' . (int) $post['id_usuario']);
+                        $imgPost = url($post['ruta_imagen']);
+                        $liked = !empty($post['liked']);
+                        $siguiendo = !empty($post['siguiendo']);
+                        $textoPost = trim((string) ($post['titulo'] ? ($post['titulo'] . ': ' . $post['descripcion']) : $post['descripcion']));
+                    ?>
 
                         <article
                             class="com-post"
-                            data-post-id="<?= esc($post['id']) ?>"
+                            data-post-id="<?= (int) $post['id_publicacion'] ?>"
                         >
 
                             <!-- ENCABEZADO -->
@@ -417,7 +340,7 @@ function esc($dato) {
 
                                 <!-- Avatar -->
                                 <a
-                                    href="usuario_externo.php"
+                                    href="<?= e($urlPerfil) ?>"
                                     class="com-post-avatar"
                                     aria-label="Ver perfil"
                                 >
@@ -426,60 +349,47 @@ function esc($dato) {
                                     </svg>
                                 </a>
 
-
                                 <!-- Nombre -->
                                 <a
-                                    href="usuario_externo.php"
+                                    href="<?= e($urlPerfil) ?>"
                                     class="com-post-author"
                                 >
-                                    <?= esc($post['autor']) ?>
+                                    <?= e($post['nombre_usuario']) ?>
                                 </a>
 
-
-                                <!-- Seguir -->
-                                <button
-                                    type="button"
-                                    class="com-follow"
-                                    data-author="<?= esc($post['autor']) ?>"
-                                    aria-pressed="false"
-                                >
-                                    Seguir
-                                </button>
+                                <?php if (!$esMio): ?>
+                                    <!-- Seguir -->
+                                    <button
+                                        type="button"
+                                        class="com-follow<?= $siguiendo ? ' siguiendo' : '' ?>"
+                                        data-user-id="<?= (int) $post['id_usuario'] ?>"
+                                        data-author="<?= e($post['nombre_usuario']) ?>"
+                                        aria-pressed="<?= $siguiendo ? 'true' : 'false' ?>"
+                                    >
+                                        <?= $siguiendo ? 'Siguiendo' : 'Seguir' ?>
+                                    </button>
+                                <?php endif; ?>
 
                             </header>
 
-
                             <!-- DESCRIPCIÓN -->
-                            <?php if (trim($post['texto']) !== ''): ?>
-
+                            <?php if ($textoPost !== ''): ?>
                                 <p class="com-post-text">
-                                    <?= esc($post['texto']) ?>
+                                    <?= e($textoPost) ?>
                                 </p>
-
                             <?php endif; ?>
 
-
                             <!-- IMAGEN -->
-                            <?php if ($post['imagen'] !== ''): ?>
-
+                            <?php if ($imgPost !== ''): ?>
                                 <div class="com-post-image">
-
-                                    <!--
-                                        TODO: Cambiar la ruta en el arreglo
-                                        PHP si falta la imagen real.
-                                    -->
-
                                     <img
-                                        src="<?= esc($post['imagen']) ?>"
+                                        src="<?= e($imgPost) ?>"
                                         alt="Ilustración de la publicación"
                                         loading="lazy"
                                         onerror="this.hidden=true"
                                     >
-
                                 </div>
-
                             <?php endif; ?>
-
 
                             <!-- ACCIONES -->
                             <footer class="com-post-actions">
@@ -487,18 +397,17 @@ function esc($dato) {
                                 <!-- ME GUSTA -->
                                 <button
                                     type="button"
-                                    class="com-like"
+                                    class="com-like<?= $liked ? ' liked' : '' ?>"
                                     data-action="like"
                                     aria-label="Me gusta"
-                                    aria-pressed="false"
+                                    aria-pressed="<?= $liked ? 'true' : 'false' ?>"
                                 >
                                     <svg class="com-icon" aria-hidden="true">
                                         <use href="#com-icon-heart"></use>
                                     </svg>
 
-                                    <span>0</span>
+                                    <span><?= (int) $post['total_likes'] ?></span>
                                 </button>
-
 
                                 <!-- COMENTAR -->
                                 <button
@@ -510,9 +419,8 @@ function esc($dato) {
                                         <use href="#com-icon-comment"></use>
                                     </svg>
 
-                                    <span>0</span>
+                                    <span><?= (int) $post['total_comentarios'] ?></span>
                                 </button>
-
 
                                 <!-- COMPARTIR -->
                                 <button
@@ -533,11 +441,10 @@ function esc($dato) {
 
                 </div>
 
-
                 <p
                     class="com-empty"
                     id="comSinPublicaciones"
-                    hidden
+                    <?= count($publicacionesActuales) > 0 ? 'hidden' : '' ?>
                 >
                     No hay publicaciones en esta comunidad.
                 </p>
@@ -547,9 +454,6 @@ function esc($dato) {
         </div>
 
     </main>
-
-
-
 
     <div
         class="com-dialog-backdrop"
@@ -580,12 +484,10 @@ function esc($dato) {
 
             </div>
 
-
             <div
                 class="com-comment-list"
                 id="listaComentariosCom"
             ></div>
-
 
             <form
                 class="com-comment-form"
@@ -611,7 +513,6 @@ function esc($dato) {
 
     </div>
 
-
     <div
         class="com-toast"
         id="avisoComunidadInd"
@@ -619,11 +520,11 @@ function esc($dato) {
         aria-live="polite"
     ></div>
 
-
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>" defer></script>
     <script
-        src="../assets/js/comunidad_ind.js"
+        src="../assets/js/comunidad_ind.js?v=<?= filemtime(__DIR__ . '/../assets/js/comunidad_ind.js') ?>"
         defer
     ></script>
 

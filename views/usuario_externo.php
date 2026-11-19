@@ -1,9 +1,59 @@
+<?php
+require_once __DIR__ . '/includes/app.php';
+
+$yo = requerirLogin();
+$idYo = (int) $yo['id_usuario'];
+$pdo = conexion();
+
+$paramId = trim((string) ($_GET['id'] ?? $_GET['u'] ?? ''));
+
+if ($paramId === '') {
+    $stmt = $pdo->prepare('SELECT id_usuario FROM usuarios WHERE id_usuario <> ? ORDER BY id_usuario ASC LIMIT 1');
+    $stmt->execute([$idYo]);
+    $idExterno = (int) ($stmt->fetchColumn() ?: $idYo);
+} elseif (ctype_digit($paramId)) {
+    $idExterno = (int) $paramId;
+} else {
+    $stmt = $pdo->prepare('SELECT id_usuario FROM usuarios WHERE nombre_usuario = ? LIMIT 1');
+    $stmt->execute([$paramId]);
+    $idExterno = (int) ($stmt->fetchColumn() ?: 0);
+}
+
+if ($idExterno === $idYo) {
+    header('Location: usuario_propio.php');
+    exit;
+}
+
+$externo = $idExterno > 0 ? obtenerUsuario($idExterno) : null;
+if (!$externo) {
+    http_response_code(404);
+    exit('Usuario no encontrado. <a href="inicio.php">Volver al inicio</a>');
+}
+
+$chkSeg = $pdo->prepare('SELECT 1 FROM seguimientos WHERE id_seguidor = ? AND id_seguido = ?');
+$chkSeg->execute([$idYo, $idExterno]);
+$siguiendo = (bool) $chkSeg->fetchColumn();
+
+$chkBloq = $pdo->prepare('SELECT 1 FROM bloqueos WHERE id_bloqueador = ? AND id_bloqueado = ?');
+$chkBloq->execute([$idYo, $idExterno]);
+$bloqueado = (bool) $chkBloq->fetchColumn();
+
+$publicacionesExterno = obtenerPublicaciones(['id_usuario' => $idExterno], 40);
+$comunidadesExterno = obtenerComunidades(['id_miembro' => $idExterno]);
+if (empty($comunidadesExterno)) {
+    $comunidadesExterno = obtenerComunidades(['limite' => 6]);
+}
+
+$coloresFallback = ['boomy', 'redisenos', 'arte', 'historias'];
+$imgPerfilUrl = url($externo['imagen_perfil']);
+$seguidoresCount = (int) $externo['total_seguidores'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fulanito_detal | DrawU</title>
+    <title><?= e($externo['nombre_usuario']) ?> | DrawU</title>
 
     <!-- Bootstrap -->
     <link
@@ -12,18 +62,18 @@
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../assets/css/usuario_propio.css">
-    <link rel="stylesheet" href="../assets/css/publicaciones.css">
-    <link rel="stylesheet" href="../assets/css/usuario_externo.css">
+    <link rel="stylesheet" href="../assets/css/usuario_propio.css?v=<?= filemtime(__DIR__ . '/../assets/css/usuario_propio.css') ?>">
+    <link rel="stylesheet" href="../assets/css/publicaciones.css?v=<?= filemtime(__DIR__ . '/../assets/css/publicaciones.css') ?>">
+    <link rel="stylesheet" href="../assets/css/usuario_externo.css?v=<?= filemtime(__DIR__ . '/../assets/css/usuario_externo.css') ?>">
 </head>
-<body>
+<body data-external-user-id="<?= $idExterno ?>" data-external-username="<?= e($externo['nombre_usuario']) ?>" data-is-blocked="<?= $bloqueado ? '1' : '0' ?>">
 
     <?php include __DIR__ . '/includes/header/header.php'; ?>
     <?php include __DIR__ . '/includes/navbar.php'; ?>
 
     <!-- Banner superior -->
     <header class="banner">
-        <h2>Banner del personaje elegido</h2>
+        <h2><?= e($externo['mascota_nombre'] ? ('Estilo activo: ' . $externo['mascota_nombre']) : 'Banner del personaje elegido') ?></h2>
     </header>
 
     <!-- Perfil del usuario externo -->
@@ -32,14 +82,18 @@
         <div class="contenedor-foto">
             <!-- Solo se puede visualizar, no cambiar -->
             <button class="foto-perfil" id="fotoPerfil" type="button" aria-label="Ver foto de perfil">
-                <span id="textoFoto">Imagen</span>
+                <?php if ($imgPerfilUrl !== ''): ?>
+                    <img src="<?= e($imgPerfilUrl) ?>" alt="Foto de perfil de <?= e($externo['nombre_usuario']) ?>">
+                <?php else: ?>
+                    <span id="textoFoto">Imagen</span>
+                <?php endif; ?>
             </button>
         </div>
 
         <div class="datos-perfil">
 
             <div class="nombre-con-menu">
-                <h1 id="nombreUsuario">Fulanito_detal</h1>
+                <h1 id="nombreUsuario"><?= e($externo['nombre_usuario']) ?></h1>
 
                 <button class="tres-puntos" id="opcionesUsuario" type="button" aria-label="Opciones del usuario" aria-expanded="false">
                     ⋮
@@ -47,81 +101,93 @@
 
                 <!-- Menú con el estilo del de comunidad -->
                 <div class="menu-externo oculto" id="menuPuntos" role="menu">
-                    <button type="button" role="menuitem" class="boton-seguir" data-usuario="Fulanito_detal">Seguir</button>
-                    <button type="button" role="menuitem" id="bloquearUsuario">Bloquear usuario</button>
+                    <button
+                        type="button"
+                        role="menuitem"
+                        class="boton-seguir<?= $siguiendo ? ' siguiendo' : '' ?><?= $bloqueado ? ' oculto' : '' ?>"
+                        data-user-id="<?= $idExterno ?>"
+                        data-usuario="<?= e($externo['nombre_usuario']) ?>"
+                        aria-pressed="<?= $siguiendo ? 'true' : 'false' ?>"
+                    ><?= $siguiendo ? 'Dejar de seguir' : 'Seguir' ?></button>
+                    <button type="button" role="menuitem" id="bloquearUsuario" class="<?= $bloqueado ? '' : 'peligro' ?>">
+                        <?= $bloqueado ? 'Desbloquear usuario' : 'Bloquear usuario' ?>
+                    </button>
                     <button type="button" role="menuitem" id="reportarUsuario">Reportar usuario</button>
                 </div>
 
-                <button type="button" class="boton-seguir boton-seguir-perfil" data-usuario="Fulanito_detal">Seguir</button>
+                <button
+                    type="button"
+                    class="boton-seguir boton-seguir-perfil<?= $siguiendo ? ' siguiendo' : '' ?><?= $bloqueado ? ' oculto' : '' ?>"
+                    data-user-id="<?= $idExterno ?>"
+                    data-usuario="<?= e($externo['nombre_usuario']) ?>"
+                    aria-pressed="<?= $siguiendo ? 'true' : 'false' ?>"
+                ><?= $siguiendo ? 'Dejar de seguir' : 'Seguir' ?></button>
             </div>
 
             <div class="estadisticas">
-                <span id="nombreHandle">@fulanito_detal</span>
+                <span id="nombreHandle">@<?= e(strtolower($externo['nombre_usuario'])) ?></span>
 
                 <div>
-                    <span>2 Publicaciones</span>
-                    <span id="contadorSeguidores">0 Seguidores</span>
-                    <span>0 Seguidos</span>
+                    <span><?= (int) $externo['total_publicaciones'] ?> Publicaciones</span>
+                    <span id="contadorSeguidores"><?= plural($seguidoresCount, 'Seguidor', 'Seguidores') ?></span>
+                    <span><?= (int) $externo['total_seguidos'] ?> Seguidos</span>
                 </div>
             </div>
 
             <p id="descripcionPerfil">
-                Breve descripción del usuario
+                <?= e($externo['descripcion_perfil'] ?: 'Sin descripción') ?>
             </p>
 
         </div>
     </section>
 
     <!-- Aviso de usuario bloqueado -->
-    <p class="aviso-bloqueo oculto" id="avisoBloqueo">
+    <p class="aviso-bloqueo<?= $bloqueado ? '' : ' oculto' ?>" id="avisoBloqueo">
         Has bloqueado a este usuario. No verás sus publicaciones.
     </p>
 
-    <div id="contenidoUsuario">
+    <div id="contenidoUsuario" class="<?= $bloqueado ? 'oculto' : '' ?>">
     <!-- Publicaciones -->
     <section class="publicaciones">
 
-        <article class="publicacion">
-            <header class="encabezado-publicacion">
-                <span class="avatar-mini">♙</span>
-                <a class="autor-publicacion" href="usuario_externo.php">Fulanito_detal</a>
+        <?php foreach ($publicacionesExterno as $pub):
+            $imgPub = url($pub['ruta_imagen']);
+            $liked = !empty($pub['liked']);
+            $textoPub = trim((string) ($pub['titulo'] ? ($pub['titulo'] . ': ' . $pub['descripcion']) : $pub['descripcion']));
+        ?>
+            <article class="publicacion" data-publicacion-id="<?= (int) $pub['id_publicacion'] ?>">
+                <header class="encabezado-publicacion">
+                    <span class="avatar-mini">♙</span>
+                    <a class="autor-publicacion" href="usuario_externo.php?id=<?= $idExterno ?>"><?= e($externo['nombre_usuario']) ?></a>
 
-                <button type="button" class="boton-seguir" data-usuario="Fulanito_detal">Seguir</button>
-            </header>
+                    <button
+                        type="button"
+                        class="boton-seguir<?= $siguiendo ? ' siguiendo' : '' ?>"
+                        data-user-id="<?= $idExterno ?>"
+                        data-usuario="<?= e($externo['nombre_usuario']) ?>"
+                        aria-pressed="<?= $siguiendo ? 'true' : 'false' ?>"
+                    ><?= $siguiendo ? 'Dejar de seguir' : 'Seguir' ?></button>
+                </header>
 
-            <div class="imagen-publicacion">
-                <img
-                    src="../assets/img/publis/Luke.png"
-                    alt="Perro ilust Luke">
-            </div>
+                <?php if ($textoPub !== '' && $imgPub === ''): ?>
+                    <p style="padding:12px 16px;margin:0;"><?= e($textoPub) ?></p>
+                <?php endif; ?>
 
-            <footer class="acciones-publicacion">
-                <button class="accion accion-like" type="button" aria-label="Me gusta" aria-pressed="false"><svg viewBox="0 0 24 24"><path class="contorno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path class="relleno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="currentColor"/></svg><span class="contador">0</span></button>
-                <button class="accion accion-comentar" type="button" aria-label="Comentarios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span class="contador">0</span></button>
-                <button class="accion accion-compartir" type="button" aria-label="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
-            </footer>
-        </article>
+                <?php if ($imgPub !== ''): ?>
+                    <div class="imagen-publicacion">
+                        <img
+                            src="<?= e($imgPub) ?>"
+                            alt="<?= e($textoPub ?: 'Publicación de ' . $externo['nombre_usuario']) ?>">
+                    </div>
+                <?php endif; ?>
 
-        <article class="publicacion">
-            <header class="encabezado-publicacion">
-                <span class="avatar-mini">♙</span>
-                <a class="autor-publicacion" href="usuario_externo.php">Fulanito_detal</a>
-
-                <button type="button" class="boton-seguir" data-usuario="Fulanito_detal">Seguir</button>
-            </header>
-
-            <div class="imagen-publicacion">
-                <img
-                    src="../assets/img/publis/visemas_lilly.png"
-                    alt="visemas lilly">
-            </div>
-
-            <footer class="acciones-publicacion">
-                <button class="accion accion-like" type="button" aria-label="Me gusta" aria-pressed="false"><svg viewBox="0 0 24 24"><path class="contorno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path class="relleno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="currentColor"/></svg><span class="contador">0</span></button>
-                <button class="accion accion-comentar" type="button" aria-label="Comentarios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span class="contador">0</span></button>
-                <button class="accion accion-compartir" type="button" aria-label="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
-            </footer>
-        </article>
+                <footer class="acciones-publicacion">
+                    <button class="accion accion-like<?= $liked ? ' liked' : '' ?>" type="button" aria-label="Me gusta" aria-pressed="<?= $liked ? 'true' : 'false' ?>"><svg viewBox="0 0 24 24"><path class="contorno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path class="relleno" d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" fill="currentColor"/></svg><span class="contador"><?= (int) $pub['total_likes'] ?></span></button>
+                    <button class="accion accion-comentar" type="button" aria-label="Comentarios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span class="contador"><?= (int) $pub['total_comentarios'] ?></span></button>
+                    <button class="accion accion-compartir" type="button" aria-label="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+                </footer>
+            </article>
+        <?php endforeach; ?>
 
     </section>
 
@@ -144,121 +210,39 @@
 
                 <div class="pista-carrusel" id="pistaCarrusel">
 
-                    <!-- Comunidad 1 -->
-                    <article class="comunidad" tabindex="0">
+                    <?php foreach ($comunidadesExterno as $idx => $com):
+                        $colorFb = $coloresFallback[$idx % count($coloresFallback)];
+                        $imgCom = url($com['imagen_perfil'] ?: $com['imagen_banner']);
+                    ?>
+                        <article class="comunidad" tabindex="0">
 
-                        <img
-                            src="../assets/img/comunidades/boomy_lentes.png"
-                            alt="Comunidad Boom día, Boomy!"
-                            onerror="this.style.display='none';">
+                            <?php if ($imgCom !== ''): ?>
+                                <img
+                                    src="<?= e($imgCom) ?>"
+                                    alt="Comunidad <?= e($com['titulo']) ?>"
+                                    onerror="this.style.display='none';">
+                            <?php endif; ?>
 
-                        <div class="portada-fallback boomy">
-                            <span>Boom día, Boomy!</span>
-                        </div>
-
-                        <div class="info-comunidad">
-                            <div>
-                                <h3 style="color:white">Boom día, Boomy!</h3>
-
-                                <p>
-                                    Comparte aventuras, personajes y
-                                    momentos del mundo de Boomy.
-                                </p>
+                            <div class="portada-fallback <?= e($colorFb) ?>">
+                                <span><?= e($com['titulo']) ?></span>
                             </div>
 
-                            <a href="comunidad_ind.php">
-                                Ver más
-                            </a>
-                        </div>
+                            <div class="info-comunidad">
+                                <div>
+                                    <h3 style="color:white"><?= e($com['titulo']) ?></h3>
 
-                    </article>
+                                    <p>
+                                        <?= e($com['descripcion'] ?: 'Comunidad artística de DrawU.') ?>
+                                    </p>
+                                </div>
 
-                    <!-- Comunidad 2 -->
-                    <article class="comunidad" tabindex="0">
-
-                        <img
-                            src="../assets/img/comunidades/LSS_Lilly.png"
-                            alt="Comunidad de rediseño de personajes"
-                            onerror="this.style.display='none';">
-
-                        <div class="portada-fallback redisenos">
-                            <span>Rediseño ✦</span>
-                        </div>
-
-                        <div class="info-comunidad">
-                            <div>
-                                <h3 style="color:white">Rediseño de personajes</h3>
-
-                                <p>
-                                    Compartimos diseños de
-                                    nuestros OC's y retros.
-                                </p>
+                                <a href="comunidad_ind.php?id=<?= urlencode($com['slug']) ?>">
+                                    Ver más
+                                </a>
                             </div>
 
-                            <a href="comunidad_ind.php">
-                                Ver más
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <!-- Comunidad 3 -->
-                    <article class="comunidad" tabindex="0">
-
-                        <img
-                            src="../assets/img/comunidades/hermanitos.png"
-                            alt="Comunidad de arte y creatividad"
-                            onerror="this.style.display='none';">
-
-                        <div class="portada-fallback arte">
-                            <span>Arte y color ♡</span>
-                        </div>
-
-                        <div class="info-comunidad">
-                            <div>
-                                <h3 style="color:white">Arte y color</h3>
-
-                                <p>
-                                    Comparte dibujos, ilustraciones
-                                    y proyectos creativos.
-                                </p>
-                            </div>
-
-                            <a href="comunidad_ind.php">
-                                Ver más
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <!-- Comunidad 4 -->
-                    <article class="comunidad" tabindex="0">
-
-                        <img
-                            src="../assets/img/comunidades/claro_oscuro.png"
-                            alt="Comunidad de arte y creatividad"
-                            onerror="this.style.display='none';">
-
-                        <div class="portada-fallback historias">
-                            <span>Noobs del dibujo</span>
-                        </div>
-
-                        <div class="info-comunidad">
-                            <div>
-                                <h3 style="color:white">Noobs del dibujo</h3>
-
-                                <p>
-                                    Somos un grupo de noobs intentando
-                                    dibujar sin morir en el intento.
-                                </p>
-                            </div>
-
-                            <a href="comunidad_ind.php">
-                                Ver más
-                            </a>
-                        </div>
-
-                    </article>
+                        </article>
+                    <?php endforeach; ?>
 
                 </div>
             </div>
@@ -282,7 +266,7 @@
     <div class="overlay" id="modalReporte" aria-hidden="true">
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="tituloReporte">
             <div class="modal-head">
-                <span id="tituloReporte">Reportar a Fulanito_detal</span>
+                <span id="tituloReporte">Reportar a <?= e($externo['nombre_usuario']) ?></span>
                 <button class="modal-cerrar" data-cerrar aria-label="Cerrar">×</button>
             </div>
             <form class="modal-body form-reporte" id="formReporte">
@@ -311,8 +295,8 @@
     </aside>
 
     <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
-    <script src="../assets/js/publicaciones.js"></script>
-    <script src="../assets/js/usuario_externo.js"></script>
+    <script src="../assets/js/publicaciones.js?v=<?= filemtime(__DIR__ . '/../assets/js/publicaciones.js') ?>"></script>
+    <script src="../assets/js/usuario_externo.js?v=<?= filemtime(__DIR__ . '/../assets/js/usuario_externo.js') ?>"></script>
     <?php include __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

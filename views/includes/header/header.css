@@ -1,4 +1,4 @@
-﻿/* Fuente Monument (para que el componente funcione por sí solo) */
+/* Fuente Monument (para que el componente funcione por sí solo) */
 @font-face {
     font-family: 'Monument';
     src: url('../../../assets/fonts/Monument.otf') format('opentype');
@@ -103,4 +103,31 @@ body {
     cursor: pointer;
     text-decoration: none;
 }
+
+/* ========================================
+   HEADER - MODO OSCURO GLOBAL
+======================================== */
+
+body.oscuro .header {
+    background: #242429;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+body.oscuro .header-logo,
+body.oscuro .header-search,
+body.oscuro .header-coins,
+body.oscuro .header-icon {
+    background: #373740;
+    color: #f5f4fa;
+}
+
+body.oscuro .header-search input,
+body.oscuro .header-search button {
+    color: #f5f4fa;
+}
+
+body.oscuro .header-search input::placeholder {
+    color: #b8b5c6;
+}
+
 

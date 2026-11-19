@@ -1,22 +1,23 @@
 /**
- * Perfil de otro usuario (usuario_externo.php)
- * - Ver foto de perfil (sin poder cambiarla)
- * - Menú de tres puntos: seguir, bloquear, reportar
- * - Carrusel de comunidades
- * Like / comentarios / compartir / seguir están en publicaciones.js
+ * Perfil de otro usuario (usuario_externo.php) conectado a la base de datos.
  */
 (() => {
-    const USUARIO = 'Fulanito_detal';
+    const ID_USUARIO = document.body.dataset.externalUserId;
+    const USUARIO = document.body.dataset.externalUsername || 'Usuario';
+    let bloqueadoActual = document.body.dataset.isBlocked === '1';
+
     const menuPuntos = document.getElementById('menuPuntos');
     const opciones = document.getElementById('opcionesUsuario');
 
     function abrirModal(id) {
         const m = document.getElementById(id);
+        if (!m) return;
         m.classList.add('abierto');
         m.setAttribute('aria-hidden', 'false');
     }
     function cerrarModal(id) {
         const m = document.getElementById(id);
+        if (!m) return;
         m.classList.remove('abierto');
         m.setAttribute('aria-hidden', 'true');
     }
@@ -31,52 +32,82 @@
         mostrarMenu(menuPuntos.classList.contains('oculto'));
     });
     document.addEventListener('click', e => {
-        if (!e.target.closest('.nombre-con-menu') || e.target.closest('#menuPuntos button')) mostrarMenu(false);
+        if (!e.target.closest('.nombre-con-menu') || e.target.closest('#menuPuntos button')) {
+            mostrarMenu(false);
+        }
     });
 
     // --- Contador de seguidores ---
-    document.addEventListener('seguir-cambio', e => {
-        if (e.detail.usuario !== USUARIO) return;
-        const n = e.detail.siguiendo ? 1 : 0;
-        document.getElementById('contadorSeguidores').textContent = `${n} Seguidor${n === 1 ? '' : 'es'}`;
-    });
-    if (localStorage.getItem('siguiendo_' + USUARIO) === '1') {
-        document.getElementById('contadorSeguidores').textContent = '1 Seguidor';
+    function actualizarTextoSeguidores(n) {
+        const el = document.getElementById('contadorSeguidores');
+        if (el && typeof n === 'number') {
+            el.textContent = `${n} Seguidor${n === 1 ? '' : 'es'}`;
+        }
     }
 
-    // --- Bloquear / desbloquear ---
+    document.addEventListener('seguir-cambio', e => {
+        if (String(e.detail.idUsuario) !== String(ID_USUARIO)) return;
+        actualizarTextoSeguidores(e.detail.seguidores);
+    });
+
+    // --- Bloquear / desbloquear en BD ---
     const btnBloquear = document.getElementById('bloquearUsuario');
-    const claveBloqueo = 'bloqueado_' + USUARIO;
     function aplicarBloqueo(bloqueado) {
+        bloqueadoActual = bloqueado;
+        document.body.dataset.isBlocked = bloqueado ? '1' : '0';
         document.getElementById('contenidoUsuario').classList.toggle('oculto', bloqueado);
         document.getElementById('avisoBloqueo').classList.toggle('oculto', !bloqueado);
-        document.querySelectorAll('.boton-seguir[data-usuario="' + USUARIO + '"]')
-            .forEach(b => b.classList.toggle('oculto', bloqueado));
+        document.querySelectorAll(`.boton-seguir[data-user-id="${ID_USUARIO}"]`).forEach(b => {
+            b.classList.toggle('oculto', bloqueado);
+            if (bloqueado) {
+                b.classList.remove('siguiendo');
+                b.textContent = 'Seguir';
+                b.setAttribute('aria-pressed', 'false');
+            }
+        });
         btnBloquear.textContent = bloqueado ? 'Desbloquear usuario' : 'Bloquear usuario';
         btnBloquear.classList.toggle('peligro', !bloqueado);
     }
-    btnBloquear.addEventListener('click', () => {
-        const bloqueado = localStorage.getItem(claveBloqueo) === '1';
-        if (!bloqueado) {
+
+    btnBloquear.addEventListener('click', async () => {
+        if (!bloqueadoActual) {
             if (!confirm(`¿Seguro que quieres bloquear a ${USUARIO}? Dejarás de seguirlo y no verás sus publicaciones.`)) return;
-            if (localStorage.getItem('siguiendo_' + USUARIO) === '1') window.toggleSeguir(USUARIO);
         }
-        localStorage.setItem(claveBloqueo, bloqueado ? '0' : '1');
-        aplicarBloqueo(!bloqueado);
+        try {
+            const res = await window.drawuApi('bloqueo.php', { id_usuario: ID_USUARIO });
+            aplicarBloqueo(Boolean(res.bloqueado));
+            actualizarTextoSeguidores(res.seguidores);
+            if (!res.bloqueado) {
+                window.location.reload();
+            }
+        } catch (err) {
+            alert(err.message);
+        }
     });
-    aplicarBloqueo(localStorage.getItem(claveBloqueo) === '1');
 
-    // --- Reportar ---
+    // --- Reportar en BD ---
     document.getElementById('reportarUsuario').addEventListener('click', () => abrirModal('modalReporte'));
-    document.getElementById('formReporte').addEventListener('submit', e => {
+    document.getElementById('formReporte').addEventListener('submit', async e => {
         e.preventDefault();
-        // TODO: enviar el reporte al backend
-        alert('Gracias. Revisaremos tu reporte.');
-        e.target.reset();
-        cerrarModal('modalReporte');
+        const motivoEl = e.target.querySelector('input[name="motivo"]:checked');
+        const detalle = document.getElementById('detalleReporte').value.trim();
+        if (!motivoEl) return;
+
+        try {
+            await window.drawuApi('reporte.php', {
+                id_usuario: ID_USUARIO,
+                motivo: motivoEl.value,
+                detalle
+            });
+            alert('Gracias. Revisaremos tu reporte.');
+            e.target.reset();
+            cerrarModal('modalReporte');
+        } catch (err) {
+            alert(err.message);
+        }
     });
 
-    // --- Ver foto de perfil (solo visualizar) ---
+    // --- Ver foto de perfil ---
     const fotoPerfil = document.getElementById('fotoPerfil');
     fotoPerfil.addEventListener('click', () => {
         const visor = document.getElementById('visorContenido');

@@ -1,40 +1,33 @@
 <?php
+require_once __DIR__ . '/includes/app.php';
+
+$usuario = requerirLogin();
+$yo = (int) $usuario['id_usuario'];
+
+$retoDb = obtenerRetoActual();
+$idRetoActual = $retoDb ? (int) $retoDb['id_reto'] : 0;
 
 $retoDelDia = [
-    'id' => 'reto-kirby-paisaje',
-    'titulo' => 'Reto: Kirby paisaje',
-    'descripcion' => 'Consigue más Drawings haciendo retos de dibujo diarios.',
-    'personaje' => 'Kirby',
-
-    'imagen_reto' => '',
-
-    'imagen_personaje' => ''
+    'id' => $idRetoActual ?: 'reto-kirby-paisaje',
+    'titulo' => $retoDb['titulo'] ?? 'Reto: Kirby paisaje',
+    'descripcion' => $retoDb['descripcion'] ?? 'Consigue más Drawings haciendo retos de dibujo diarios.',
+    'imagen_reto' => url($retoDb['ruta_imagen'] ?? ''),
+    'imagen_personaje' => url($usuario['mascota_imagen'] ?? ''),
 ];
 
-$destacados = [
-    [
-        'id' => 'destacado-1',
-        'autor' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'texto' => ''
-    ],
-    [
-        'id' => 'destacado-2',
-        'autor' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'texto' => ''
-    ],
-    [
-        'id' => 'destacado-3',
-        'autor' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'texto' => ''
-    ]
-];
-
-function escReto($dato) {
-    return htmlspecialchars((string) $dato, ENT_QUOTES, 'UTF-8');
+// Destacados de la semana: publicaciones asociadas al reto ordenadas por likes
+$destacados = $idRetoActual > 0
+    ? obtenerPublicaciones(['id_reto' => $idRetoActual, 'orden' => 'likes'], 6)
+    : [];
+if (empty($destacados)) {
+    $destacados = obtenerPublicaciones(['solo_con_imagen' => true, 'orden' => 'likes'], 3);
 }
+
+$postPrincipal = $destacados[0] ?? null;
+$idPostPrincipal = $postPrincipal ? (int) $postPrincipal['id_publicacion'] : 0;
+$likesPrincipal = $postPrincipal ? (int) $postPrincipal['total_likes'] : 0;
+$comentariosPrincipal = $postPrincipal ? (int) $postPrincipal['total_comentarios'] : 0;
+$likedPrincipal = !empty($postPrincipal['liked']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -50,7 +43,7 @@ function escReto($dato) {
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../assets/css/reto_dia.css">
+    <link rel="stylesheet" href="../assets/css/reto_dia.css?v=<?= filemtime(__DIR__ . '/../assets/css/reto_dia.css') ?>">
 </head>
 
 <body class="reto-page">
@@ -61,7 +54,7 @@ function escReto($dato) {
     <main
         class="reto-main"
         id="paginaRetoDia"
-        data-reto-id="<?= escReto($retoDelDia['id']) ?>"
+        data-reto-id="<?= e($retoDelDia['id']) ?>"
     >
         <svg
             class="reto-icons-sprite"
@@ -143,13 +136,12 @@ function escReto($dato) {
 
                     <?php if ($retoDelDia['imagen_personaje'] !== ''): ?>
                         <img
-                            src="<?= escReto($retoDelDia['imagen_personaje']) ?>"
+                            src="<?= e($retoDelDia['imagen_personaje']) ?>"
                             alt="Personaje elegido del reto"
                             loading="lazy"
                             data-asset-opcional
                         >
                     <?php else: ?>
-                        
                         <span>Imagen del personaje elegido</span>
                     <?php endif; ?>
 
@@ -166,22 +158,21 @@ function escReto($dato) {
             <article class="reto-card">
 
                 <h2 style="color:white">
-                    <?= escReto($retoDelDia['titulo']) ?>
+                    <?= e($retoDelDia['titulo']) ?>
                 </h2>
 
                 <div class="reto-card-media">
 
                     <?php if ($retoDelDia['imagen_reto'] !== ''): ?>
                         <img
-                            src="<?= escReto($retoDelDia['imagen_reto']) ?>"
-                            alt="<?= escReto($retoDelDia['titulo']) ?>"
+                            src="<?= e($retoDelDia['imagen_reto']) ?>"
+                            alt="<?= e($retoDelDia['titulo']) ?>"
                             loading="lazy"
                             data-asset-opcional
                         >
                     <?php else: ?>
-                        
                         <div class="reto-card-placeholder">
-                            Imagen del reto
+                            <?= e($retoDelDia['descripcion']) ?>
                         </div>
                     <?php endif; ?>
 
@@ -189,44 +180,54 @@ function escReto($dato) {
 
                 <footer class="reto-card-actions">
 
-                    <button
-                        type="button"
-                        class="reto-action reto-like"
-                        data-action="like"
-                        data-post-id="reto-principal"
-                        aria-label="Me gusta"
-                        aria-pressed="false"
-                    >
-                        <svg class="reto-icon" aria-hidden="true">
-                            <use href="#reto-icon-heart"></use>
-                        </svg>
-                        <span>0</span>
-                    </button>
+                    <?php if ($idPostPrincipal > 0): ?>
+                        <button
+                            type="button"
+                            class="reto-action reto-like<?= $likedPrincipal ? ' liked' : '' ?>"
+                            data-action="like"
+                            data-post-id="<?= $idPostPrincipal ?>"
+                            aria-label="Me gusta"
+                            aria-pressed="<?= $likedPrincipal ? 'true' : 'false' ?>"
+                        >
+                            <svg class="reto-icon" aria-hidden="true">
+                                <use href="#reto-icon-heart"></use>
+                            </svg>
+                            <span><?= $likesPrincipal ?></span>
+                        </button>
 
-                    <button
-                        type="button"
-                        class="reto-action"
-                        data-action="comment"
-                        data-post-id="reto-principal"
-                        aria-label="Abrir comentarios"
-                    >
-                        <svg class="reto-icon" aria-hidden="true">
-                            <use href="#reto-icon-comment"></use>
-                        </svg>
-                        <span>0</span>
-                    </button>
+                        <button
+                            type="button"
+                            class="reto-action"
+                            data-action="comment"
+                            data-post-id="<?= $idPostPrincipal ?>"
+                            aria-label="Abrir comentarios"
+                        >
+                            <svg class="reto-icon" aria-hidden="true">
+                                <use href="#reto-icon-comment"></use>
+                            </svg>
+                            <span><?= $comentariosPrincipal ?></span>
+                        </button>
+                    <?php endif; ?>
 
                     <button
                         type="button"
                         class="reto-action"
                         data-action="share"
-                        data-post-id="reto-principal"
+                        data-post-id="<?= $idPostPrincipal ?: 'reto' ?>"
                         aria-label="Compartir reto"
                     >
                         <svg class="reto-icon" aria-hidden="true">
                             <use href="#reto-icon-share"></use>
                         </svg>
                     </button>
+
+                    <a
+                        href="crear_publi.php?reto=1"
+                        class="reto-action"
+                        style="margin-left:auto;text-decoration:none;font-weight:600;padding:4px 12px;"
+                    >
+                        Participar (+20 Draws)
+                    </a>
 
                 </footer>
 
@@ -245,7 +246,15 @@ function escReto($dato) {
 
             <div class="reto-featured-list">
 
-                <?php foreach ($destacados as $indice => $post): ?>
+                <?php foreach ($destacados as $indice => $post):
+                    $idPost = (int) $post['id_publicacion'];
+                    $esMio = ((int) $post['id_usuario'] === $yo);
+                    $urlPerfil = $esMio ? 'usuario_propio.php' : ('usuario_externo.php?id=' . (int) $post['id_usuario']);
+                    $imgPost = url($post['ruta_imagen']);
+                    $liked = !empty($post['liked']);
+                    $siguiendo = !empty($post['siguiendo']);
+                    $textoPost = trim((string) $post['descripcion']);
+                ?>
                     <div class="reto-featured-item">
 
                         <div class="reto-rank-pill">
@@ -254,13 +263,13 @@ function escReto($dato) {
 
                         <article
                             class="reto-post"
-                            data-post-id="<?= escReto($post['id']) ?>"
+                            data-post-id="<?= $idPost ?>"
                         >
 
                             <header class="reto-post-header">
 
                                 <a
-                                    href="usuario_externo.php"
+                                    href="<?= e($urlPerfil) ?>"
                                     class="reto-post-avatar"
                                     aria-label="Ver perfil"
                                 >
@@ -270,72 +279,77 @@ function escReto($dato) {
                                 </a>
 
                                 <a
-                                    href="usuario_externo.php"
+                                    href="<?= e($urlPerfil) ?>"
                                     class="reto-post-author"
                                 >
-                                    <?= escReto($post['autor']) ?>
+                                    <?= e($post['nombre_usuario']) ?>
                                 </a>
 
-                                <button
-                                    type="button"
-                                    class="reto-follow"
-                                    data-author="<?= escReto($post['autor']) ?>"
-                                    aria-pressed="false"
-                                >
-                                    Seguir
-                                </button>
+                                <?php if (!$esMio): ?>
+                                    <button
+                                        type="button"
+                                        class="reto-follow<?= $siguiendo ? ' siguiendo' : '' ?>"
+                                        data-user-id="<?= (int) $post['id_usuario'] ?>"
+                                        data-author="<?= e($post['nombre_usuario']) ?>"
+                                        aria-pressed="<?= $siguiendo ? 'true' : 'false' ?>"
+                                    >
+                                        <?= $siguiendo ? 'Siguiendo' : 'Seguir' ?>
+                                    </button>
+                                <?php endif; ?>
 
                             </header>
 
-                            <?php if (trim($post['texto']) !== ''): ?>
+                            <?php if ($textoPost !== ''): ?>
                                 <p class="reto-post-text">
-                                    <?= escReto($post['texto']) ?>
+                                    <?= e($textoPost) ?>
                                 </p>
                             <?php endif; ?>
 
-                            <div class="reto-post-image">
-                                <img
-                                    src="<?= escReto($post['imagen']) ?>"
-                                    alt="Ilustración destacada del reto"
-                                    loading="lazy"
-                                    data-asset-opcional
-                                >
-                            </div>
+                            <?php if ($imgPost !== ''): ?>
+                                <div class="reto-post-image">
+                                    <img
+                                        src="<?= e($imgPost) ?>"
+                                        alt="Ilustración destacada del reto"
+                                        loading="lazy"
+                                        data-asset-opcional
+                                    >
+                                </div>
+                            <?php endif; ?>
 
                             <footer class="reto-post-actions">
 
                                 <button
                                     type="button"
-                                    class="reto-action reto-like"
+                                    class="reto-action reto-like<?= $liked ? ' liked' : '' ?>"
                                     data-action="like"
-                                    data-post-id="<?= escReto($post['id']) ?>"
+                                    data-post-id="<?= $idPost ?>"
                                     aria-label="Me gusta"
-                                    aria-pressed="false"
+                                    aria-pressed="<?= $liked ? 'true' : 'false' ?>"
                                 >
                                     <svg class="reto-icon" aria-hidden="true">
                                         <use href="#reto-icon-heart"></use>
                                     </svg>
-                                    <span>0</span>
+                                    <span><?= (int) $post['total_likes'] ?></span>
                                 </button>
 
                                 <button
                                     type="button"
                                     class="reto-action"
                                     data-action="comment"
-                                    data-post-id="<?= escReto($post['id']) ?>"
+                                    data-post-id="<?= $idPost ?>"
                                     aria-label="Abrir comentarios"
                                 >
                                     <svg class="reto-icon" aria-hidden="true">
                                         <use href="#reto-icon-comment"></use>
                                     </svg>
-                                    <span>0</span>
+                                    <span><?= (int) $post['total_comentarios'] ?></span>
                                 </button>
 
                                 <button
                                     type="button"
                                     class="reto-action"
                                     data-action="share"
-                                    data-post-id="<?= escReto($post['id']) ?>"
+                                    data-post-id="<?= $idPost ?>"
                                     aria-label="Compartir publicación"
                                 >
                                     <svg class="reto-icon" aria-hidden="true">
@@ -355,7 +369,6 @@ function escReto($dato) {
         </section>
 
     </main>
-
 
     <div
         class="reto-comments-backdrop"
@@ -415,7 +428,8 @@ function escReto($dato) {
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
-    <script src="../assets/js/reto_dia.js" defer></script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>" defer></script>
+    <script src="../assets/js/reto_dia.js?v=<?= filemtime(__DIR__ . '/../assets/js/reto_dia.js') ?>" defer></script>
 
 </body>
 </html>

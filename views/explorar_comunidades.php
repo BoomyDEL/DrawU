@@ -1,20 +1,10 @@
 <?php
+require_once __DIR__ . '/includes/app.php';
 
-
-$comunidad = [
-    'id' => 'boomy',
-    'nombre' => 'Boom día, Boomy!',
-    'miembros' => '67 mil miembros',
-    'actividad' => '10+ publicaciones al día',
-
-    'imagen' => '../assets/img/comunidades/boomy_lentes.png'
-];
-
-function escaparComunidad($valor) {
-    return htmlspecialchars($valor, ENT_QUOTES, 'UTF-8');
-}
+$usuario = requerirLogin();
+$busqueda = trim((string) ($_GET['q'] ?? ''));
+$comunidades = obtenerComunidades(['busqueda' => $busqueda !== '' ? $busqueda : null]);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -30,7 +20,7 @@ function escaparComunidad($valor) {
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../assets/css/explorar_comunidades.css">
+    <link rel="stylesheet" href="../assets/css/explorar_comunidades.css?v=<?= filemtime(__DIR__ . '/../assets/css/explorar_comunidades.css') ?>">
 </head>
 
 <body class="drawu-explorar-page">
@@ -44,7 +34,7 @@ function escaparComunidad($valor) {
         <div class="drawu-explorar-contenedor">
 
             <header class="drawu-explorar-titulo">
-                <h1>Comunidades</h1>
+                <h1><?= $busqueda !== '' ? ('Comunidades: "' . e($busqueda) . '"') : 'Comunidades' ?></h1>
             </header>
 
             <!-- Lista de comunidades -->
@@ -54,38 +44,31 @@ function escaparComunidad($valor) {
                 aria-label="Comunidades disponibles"
             >
 
-                <?php for ($i = 1; $i <= 12; $i++): ?>
+                <?php foreach ($comunidades as $comunidad):
+                    $imgCom = url($comunidad['imagen_perfil'] ?: $comunidad['imagen_banner'] ?: 'assets/img/comunidades/boomy_lentes.png');
+                    $unido = !empty($comunidad['es_miembro']);
+                    $miembrosTxt = plural((int) $comunidad['total_miembros'], 'miembro', 'miembros');
+                    $hoy = (int) $comunidad['publicaciones_hoy'];
+                    $actividadTxt = $hoy > 0 ? plural($hoy, 'publicación hoy', 'publicaciones hoy') : ($comunidad['privacidad'] === 'privada' ? 'Comunidad privada' : 'Comunidad pública');
+                ?>
 
                     <article
                         class="drawu-explorar-card"
-                        data-comunidad="<?= escaparComunidad($comunidad['id']) ?>"
+                        data-comunidad="<?= e($comunidad['slug']) ?>"
+                        data-comunidad-id="<?= (int) $comunidad['id_comunidad'] ?>"
                     >
 
-                        
                         <div class="drawu-explorar-imagen">
 
                             <picture>
-
-                                <?php if ($i === 1): ?>
-
-                                    
-                                    <source
-                                        media="(max-width: 650px)"
-                                        srcset="../assets/img/comunidades/LSS_Lilly.png"
-                                    >
-
-                                <?php endif; ?>
-
                                 <img
-                                    src="<?= escaparComunidad($comunidad['imagen']) ?>"
-                                    alt="Imagen de la comunidad <?= escaparComunidad($comunidad['nombre']) ?>"
+                                    src="<?= e($imgCom) ?>"
+                                    alt="Imagen de la comunidad <?= e($comunidad['titulo']) ?>"
                                     loading="lazy"
                                     data-imagen-comunidad
                                 >
-
                             </picture>
 
-                            
                             <button
                                 class="drawu-explorar-cerrar"
                                 type="button"
@@ -97,33 +80,31 @@ function escaparComunidad($valor) {
 
                         </div>
 
-                        
-                        
                         <div class="drawu-explorar-informacion">
 
                             <h2>
-                                <?= escaparComunidad($comunidad['nombre']) ?>
+                                <?= e($comunidad['titulo']) ?>
                             </h2>
 
                             <p class="drawu-explorar-detalles">
-                                <?= escaparComunidad($comunidad['miembros']) ?>
+                                <span data-miembros-count><?= e($miembrosTxt) ?></span>
                                 <span aria-hidden="true"> - </span>
-                                <?= escaparComunidad($comunidad['actividad']) ?>
+                                <?= e($actividadTxt) ?>
                             </p>
 
                             <!-- Botón para unirse -->
                             <button
-                                class="drawu-explorar-unirse"
+                                class="drawu-explorar-unirse<?= $unido ? ' unido' : '' ?>"
                                 type="button"
                                 data-unirse
-                                aria-pressed="false"
+                                aria-pressed="<?= $unido ? 'true' : 'false' ?>"
                             >
-                                Unirse a la comunidad
+                                <?= $unido ? 'Unido a la comunidad' : 'Unirse a la comunidad' ?>
                             </button>
 
-                            <!-- NUEVO: enlace a la página individual -->
+                            <!-- Enlace a la página individual -->
                             <a
-                                href="comunidad_ind.php?id=<?= urlencode($comunidad['id']) ?>"
+                                href="comunidad_ind.php?id=<?= urlencode($comunidad['slug']) ?>"
                                 class="drawu-explorar-ver"
                             >
                                 Ver publicaciones
@@ -131,27 +112,24 @@ function escaparComunidad($valor) {
 
                         </div>
 
-
                     </article>
 
-                <?php endfor; ?>
+                <?php endforeach; ?>
 
             </section>
 
             <p
                 class="drawu-explorar-vacio"
                 id="comunidadesVacias"
-                hidden
+                <?= count($comunidades) > 0 ? 'hidden' : '' ?>
             >
-                No hay comunidades visibles.
-                Recarga la página para mostrarlas nuevamente.
+                No hay comunidades disponibles<?= $busqueda !== '' ? ' para tu búsqueda' : '' ?>.
             </p>
 
         </div>
 
     </main>
 
-    
     <div
         class="drawu-explorar-aviso"
         id="avisoComunidad"
@@ -162,7 +140,8 @@ function escaparComunidad($valor) {
     <!-- Footer original -->
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
-    <script src="../assets/js/explorar_comunidades.js" defer></script>
+    <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>" defer></script>
+    <script src="../assets/js/explorar_comunidades.js?v=<?= filemtime(__DIR__ . '/../assets/js/explorar_comunidades.js') ?>" defer></script>
 
 </body>
 </html>

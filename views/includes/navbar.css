@@ -308,3 +308,12 @@ body.oscuro .side-menu a,
 body.oscuro .side-menu button { background: #3a3a40; color: #eee; }
 body.oscuro .modal-cerrar { color: #ddd; }
 body.oscuro .comentarios { background: #222; color: #eee; border-color: #444; }
+
+body.oscuro #formSoporte textarea {
+    background: #3b3b45;
+    color: #fff;
+    border-color: #555;
+}
+body.oscuro .preview-nombre {
+    color: #dcd4ff;
+}

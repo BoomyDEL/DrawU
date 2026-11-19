@@ -20,3 +20,6 @@ Thumbs.db
 # Dependencias
 vendor/
 node_modules/
+
+# Archivos subidos por los usuarios
+uploads/

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Componente Navbar lateral
  * Uso: <?php include __DIR__ . '/includes/navbar.php'; ?>
@@ -6,7 +6,7 @@
  */
 $navBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : 'views/';
 ?>
-<link rel="stylesheet" href="<?= $navBase ?>includes/navbar.css">
+<link rel="stylesheet" href="<?= $navBase ?>includes/navbar.css?v=<?= filemtime(__DIR__ . '/navbar.css') ?>">
 
 <nav class="sidebar" aria-label="Navegación principal">
     <a class="side-btn" href="<?= $navBase ?>inicio.php" aria-label="Inicio" title="Inicio">
@@ -38,7 +38,7 @@ $navBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : '
             <a role="menuitem" href="<?= $navBase ?>monedas_cambio.php">Estilos de Mascota</a>
             <button role="menuitem" id="toggleTema">Modo oscuro</button>
             <button role="menuitem" id="abrirSoporte">Ayuda y soporte técnico</button>
-            <a role="menuitem" href="<?= $navBase ?>pagina_login.php">Cerrar sesión</a>
+            <a role="menuitem" href="<?= $navBase ?>cerrar_sesion.php">Cerrar sesión</a>
         </div>
     </div>
 </nav>
@@ -111,4 +111,4 @@ $navBase = (basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'views') ? '' : '
     </div>
 </div>
 
-<script src="<?= $navBase ?>includes/navbar.js" defer></script>
+<script src="<?= $navBase ?>includes/navbar.js?v=<?= filemtime(__DIR__ . '/navbar.js') ?>" defer></script>

@@ -44,3 +44,24 @@ a.autor-publicacion:hover { text-decoration: underline; }
 .form-comentario button{border:0;border-radius:20px;background:#a48aff;color:#fff;padding:0 15px;font-weight:600;cursor:pointer}
 
 body.oscuro .accion { color: #eee; }
+body.oscuro .comentarios {
+    background: #272730;
+    color: #faf9ff;
+    border-color: #444;
+}
+body.oscuro .comentarios .cabecera,
+body.oscuro .form-comentario {
+    border-color: #444;
+}
+body.oscuro .comentarios .cerrar {
+    color: #faf9ff;
+}
+body.oscuro .vacio {
+    color: #a8a3b5;
+}
+body.oscuro .form-comentario input {
+    background: #3b3b45;
+    color: #fff;
+    border-color: #666;
+}
+

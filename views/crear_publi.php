@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/includes/app.php';
+
+$usuario = requerirLogin();
+$yo = (int) $usuario['id_usuario'];
+
+// Comunidades a las que pertenece el usuario (para avisos o publicar en comunidad)
+$misComunidades = obtenerComunidades(['id_miembro' => $yo]);
+$retoActual = obtenerRetoActual();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,8 +22,8 @@
     >
 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <link rel="stylesheet" href="../views/includes/navbar.css">
-    <link rel="stylesheet" href="../assets/css/crear_publi.css">
+    <link rel="stylesheet" href="../views/includes/navbar.css?v=<?= filemtime(__DIR__ . '/includes/navbar.css') ?>">
+    <link rel="stylesheet" href="../assets/css/crear_publi.css?v=<?= filemtime(__DIR__ . '/../assets/css/crear_publi.css') ?>">
 </head>
 <body>
 
@@ -60,6 +70,13 @@
                     </label>
 
                     <textarea class="textarea-publi" id="descripcionNormal" placeholder="Escribe un pie de foto o descripción para tu publicación..."></textarea>
+
+                    <?php if (!empty($retoActual)): ?>
+                        <label style="display:flex;align-items:center;gap:8px;font-size:0.9rem;margin-top:4px;cursor:pointer;">
+                            <input type="checkbox" id="checkParticiparReto" value="<?= (int) $retoActual['id_reto'] ?>" <?= !empty($_GET['reto']) ? 'checked' : '' ?>>
+                            <span>Participar en el reto actual: <strong><?= e($retoActual['titulo']) ?></strong> (+20 Draws en tu primera entrega)</span>
+                        </label>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Panel 2: Aviso de comunidad (selección de comunidad + título + mensaje + imagen opcional) -->
@@ -67,11 +84,9 @@
                     <div class="select-wrapper">
                         <select id="selectComunidadAviso" class="input-redondeado-lila">
                             <option value="" disabled selected hidden>Selecciona una comunidad</option>
-                            <option value="Boom día, Boomy!">Boom día, Boomy!</option>
-                            <option value="Rediseño de personajes">Rediseño de personajes</option>
-                            <option value="Arte y color">Arte y color</option>
-                            <option value="Noobs del dibujo">Noobs del dibujo</option>
-                            <option value="Little Silly Singer">Little Silly Singer</option>
+                            <?php foreach ($misComunidades as $com): ?>
+                                <option value="<?= (int) $com['id_comunidad'] ?>" data-slug="<?= e($com['slug']) ?>"><?= e($com['titulo']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -96,14 +111,13 @@
 
     <script src="../assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') ?>"></script>
     <script>
-        // Pestañas
         const tabNormal = document.getElementById('tabPubliNormal');
         const tabAviso = document.getElementById('tabAvisoComunidad');
         const panelNormal = document.getElementById('panelPubliNormal');
         const panelAviso = document.getElementById('panelAvisoComunidad');
         const tituloSeccion = document.getElementById('tituloSeccion');
         const btnSubmit = document.getElementById('btnSubmitPubli');
-        let modoActual = 'normal'; // 'normal' o 'aviso'
+        let modoActual = 'normal';
 
         tabNormal.addEventListener('click', () => {
             tabNormal.classList.add('activo');
@@ -129,7 +143,6 @@
             modoActual = 'aviso';
         });
 
-        // Previsualización y carga de archivo para publicación normal
         const inputNormal = document.getElementById('inputArchivoNormal');
         const txtNombreNormal = document.getElementById('nombreArchivoNormal');
         const previewContainer = document.getElementById('previewMedia');
@@ -158,7 +171,6 @@
             }
         });
 
-        // Adjuntar archivo en aviso
         const inputAviso = document.getElementById('inputArchivoAviso');
         const txtNombreAviso = document.getElementById('nombreArchivoAviso');
         inputAviso.addEventListener('change', e => {
@@ -166,34 +178,69 @@
             txtNombreAviso.textContent = file ? file.name : '';
         });
 
-        // Envío del formulario
-        document.getElementById('formCrearPubli').addEventListener('submit', e => {
+        document.getElementById('formCrearPubli').addEventListener('submit', async e => {
             e.preventDefault();
+            const datos = new FormData();
 
             if (modoActual === 'normal') {
                 const desc = document.getElementById('descripcionNormal').value.trim();
                 const file = inputNormal.files[0];
+                const checkReto = document.getElementById('checkParticiparReto');
+
                 if (!file && !desc) {
                     alert('Por favor selecciona un archivo o escribe una descripción para la publicación.');
                     return;
                 }
-                alert('¡Publicación creada exitosamente!');
-                window.location.href = 'usuario_propio.php';
+
+                datos.append('modo', 'normal');
+                datos.append('descripcion', desc);
+                if (file) datos.append('archivo', file);
+                if (checkReto && checkReto.checked) {
+                    datos.append('id_reto', checkReto.value);
+                }
+
+                btnSubmit.disabled = true;
+                try {
+                    const res = await window.drawuApi('publicacion.php', datos);
+                    if (res.recompensa > 0) {
+                        alert(`¡Publicación creada! Recibiste +${res.recompensa} Draws por participar en el reto del día.`);
+                    }
+                    window.location.href = res.tipo === 'video' ? 'videos.php' : 'usuario_propio.php';
+                } catch (err) {
+                    alert(err.message);
+                    btnSubmit.disabled = false;
+                }
             } else {
-                const com = document.getElementById('selectComunidadAviso').value;
+                const selectCom = document.getElementById('selectComunidadAviso');
+                const idCom = selectCom.value;
+                const slugCom = selectCom.selectedOptions[0]?.dataset.slug || '';
                 const tit = document.getElementById('tituloAviso').value.trim();
                 const msg = document.getElementById('mensajeAviso').value.trim();
+                const file = inputAviso.files[0];
 
-                if (!com) {
-                    alert('Por favor selecciona una comunidad.');
+                if (!idCom) {
+                    alert('Por favor selecciona una comunidad a la que pertenezcas.');
                     return;
                 }
                 if (!tit || !msg) {
                     alert('Por favor completa el título y el mensaje del aviso.');
                     return;
                 }
-                alert(`¡Aviso publicado con éxito en "${com}"!`);
-                window.location.href = 'explorar_comunidades.php';
+
+                datos.append('modo', 'aviso');
+                datos.append('id_comunidad', idCom);
+                datos.append('titulo', tit);
+                datos.append('mensaje', msg);
+                if (file) datos.append('archivo', file);
+
+                btnSubmit.disabled = true;
+                try {
+                    await window.drawuApi('publicacion.php', datos);
+                    window.location.href = slugCom ? ('comunidad_ind.php?id=' + encodeURIComponent(slugCom)) : 'explorar_comunidades.php';
+                } catch (err) {
+                    alert(err.message);
+                    btnSubmit.disabled = false;
+                }
             }
         });
     </script>

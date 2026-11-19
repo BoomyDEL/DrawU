@@ -28,6 +28,7 @@ CREATE TABLE usuarios (
     imagen_perfil VARCHAR(500) NULL,
     descripcion_perfil VARCHAR(500) NULL,
     tema ENUM('claro', 'oscuro') NOT NULL DEFAULT 'claro',
+    drawings INT UNSIGNED NOT NULL DEFAULT 100,
     id_mascota_activa INT UNSIGNED NULL,
     CONSTRAINT uq_usuario_nombre UNIQUE (nombre_usuario),
     CONSTRAINT uq_usuario_correo UNIQUE (correo),
@@ -224,6 +225,48 @@ CREATE TABLE usuarios_mascotas (
     CONSTRAINT fk_usuario_mascota_catalogo
         FOREIGN KEY (id_mascota) REFERENCES mascotas(id_mascota)
         ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- 15. NUEVA: usuarios bloqueados
+CREATE TABLE bloqueos (
+    id_bloqueador INT UNSIGNED NOT NULL,
+    id_bloqueado INT UNSIGNED NOT NULL,
+    fecha_bloqueo TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_bloqueador, id_bloqueado),
+    CONSTRAINT chk_no_autobloqueo CHECK (id_bloqueador <> id_bloqueado),
+    CONSTRAINT fk_bloqueo_bloqueador
+        FOREIGN KEY (id_bloqueador) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_bloqueo_bloqueado
+        FOREIGN KEY (id_bloqueado) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 16. NUEVA: reportes de usuarios
+CREATE TABLE reportes (
+    id_reporte INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_reportador INT UNSIGNED NOT NULL,
+    id_reportado INT UNSIGNED NOT NULL,
+    motivo ENUM('spam', 'acoso', 'inapropiado', 'plagio', 'otro') NOT NULL,
+    detalle VARCHAR(500) NULL,
+    fecha_reporte TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_reporte_reportador
+        FOREIGN KEY (id_reportador) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_reporte_reportado
+        FOREIGN KEY (id_reportado) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 17. NUEVA: mensajes de ayuda y soporte tecnico
+CREATE TABLE mensajes_soporte (
+    id_mensaje INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT UNSIGNED NOT NULL,
+    mensaje VARCHAR(1000) NOT NULL,
+    fecha_envio TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_soporte_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 SHOW TABLES;

@@ -47,19 +47,27 @@
         });
     }
 
+    // --- Crear comunidad (se guarda en la base de datos) ---
     const formComunidad = document.getElementById('formCrearComunidad');
     if (formComunidad) {
-        formComunidad.addEventListener('submit', e => {
+        formComunidad.addEventListener('submit', async e => {
             e.preventDefault();
-            const nom = document.getElementById('nombreComunidad')?.value.trim();
-            const priv = document.getElementById('privacidadComunidad')?.value;
-            alert(`¡Comunidad "${nom}" (${priv}) creada exitosamente!`);
-            formComunidad.reset();
-            const nf = document.getElementById('nombreFotoComunidad');
-            const nb = document.getElementById('nombreBannerComunidad');
-            if (nf) nf.textContent = '';
-            if (nb) nb.textContent = '';
-            cerrarModal(document.getElementById('modalCrearComunidad'));
+            const boton = formComunidad.querySelector('[type="submit"]');
+            const datos = new FormData();
+            datos.append('accion', 'crear');
+            datos.append('nombre', document.getElementById('nombreComunidad')?.value.trim() || '');
+            datos.append('privacidad', document.getElementById('privacidadComunidad')?.value || '');
+            if (inputFotoCom?.files[0]) datos.append('foto', inputFotoCom.files[0]);
+            if (inputBannerCom?.files[0]) datos.append('banner', inputBannerCom.files[0]);
+
+            boton.disabled = true;
+            try {
+                const res = await window.drawuApi('comunidad.php', datos);
+                window.location.href = (window.DRAWU?.base || '../') + 'views/' + res.url;
+            } catch (error) {
+                alert(error.message);
+                boton.disabled = false;
+            }
         });
     }
 
@@ -75,25 +83,42 @@
         });
     }
 
+    // --- Ayuda y soporte técnico (se guarda en la base de datos) ---
     document.getElementById('abrirSoporte').addEventListener('click', () => abrirModal('modalSoporte'));
-    document.getElementById('formSoporte').addEventListener('submit', e => {
+    document.getElementById('formSoporte').addEventListener('submit', async e => {
         e.preventDefault();
-        // TODO: enviar el mensaje al backend
-        alert('¡Gracias! Tu mensaje fue enviado al equipo de soporte.');
-        e.target.reset();
-        cerrarModal(document.getElementById('modalSoporte'));
+        const mensaje = document.getElementById('mensajeSoporte').value.trim();
+        try {
+            await window.drawuApi('soporte.php', { mensaje });
+            alert('¡Gracias! Tu mensaje fue enviado al equipo de soporte.');
+            e.target.reset();
+            cerrarModal(document.getElementById('modalSoporte'));
+        } catch (error) {
+            alert(error.message);
+        }
     });
 
-    // --- Modo claro / oscuro (se guarda en localStorage) ---
+    // --- Modo claro / oscuro (se guarda en localStorage y en el perfil del usuario) ---
     const btnTema = document.getElementById('toggleTema');
     function aplicarTema(oscuro) {
         document.body.classList.toggle('oscuro', oscuro);
         btnTema.textContent = oscuro ? 'Modo claro' : 'Modo oscuro';
     }
-    aplicarTema(localStorage.getItem('tema') === 'oscuro');
-    btnTema.addEventListener('click', () => {
+    const temaInicialOscuro = document.body.classList.contains('oscuro') ||
+        localStorage.getItem('tema') === 'oscuro' ||
+        (window.DRAWU?.tema === 'oscuro');
+    aplicarTema(temaInicialOscuro);
+
+    btnTema.addEventListener('click', async () => {
         const oscuro = !document.body.classList.contains('oscuro');
-        localStorage.setItem('tema', oscuro ? 'oscuro' : 'claro');
+        const nuevoTema = oscuro ? 'oscuro' : 'claro';
+        localStorage.setItem('tema', nuevoTema);
+        if (window.DRAWU) window.DRAWU.tema = nuevoTema;
         aplicarTema(oscuro);
+        try {
+            await window.drawuApi('perfil.php', { accion: 'tema', tema: nuevoTema });
+        } catch {
+            // El cambio visual y en localStorage se conserva
+        }
     });
 })();

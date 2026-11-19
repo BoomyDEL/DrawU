@@ -81,3 +81,39 @@
 .visor-contenido, .visor-contenido img { width: 100%; height: 100%; object-fit: cover; display: grid; place-items: center; }
 
 .menu-externo .boton-seguir.siguiendo { background: #FAFAFA !important; }
+
+/* ===== Modo oscuro en perfil externo ===== */
+body.oscuro .menu-externo {
+    background: #2c2c30;
+}
+
+body.oscuro .menu-externo button,
+body.oscuro .menu-externo .boton-seguir.siguiendo {
+    background: #3a3a40 !important;
+    color: #f1eff7 !important;
+}
+
+body.oscuro .menu-externo button:hover {
+    background: #484852 !important;
+    color: #c4b5ff !important;
+}
+
+body.oscuro .menu-externo .peligro {
+    color: #ff7b96 !important;
+}
+
+body.oscuro .aviso-bloqueo {
+    color: #bdb6ce;
+}
+
+body.oscuro .visor-foto {
+    background: #29292e;
+    color: #c4b5ff;
+}
+
+body.oscuro .form-reporte textarea {
+    background: #3b3b45;
+    color: #fff;
+    border-color: #555;
+}
+

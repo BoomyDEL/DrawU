@@ -1,4 +1,3 @@
-
 const menuFoto = document.getElementById("menuFoto");
 const menuEdicion = document.getElementById("menuEdicion");
 const menuPuntos = document.getElementById("menuPuntos");
@@ -7,12 +6,10 @@ const fotoPerfil = document.getElementById("fotoPerfil");
 const opcionesUsuario = document.getElementById("opcionesUsuario");
 const archivoFoto = document.getElementById("archivoFoto");
 
-// Mostrar y ocultar los menús
 function mostrarMenu(menu, mostrar) {
     menu.classList.toggle("oculto", !mostrar);
 }
 
-// Menú de la foto de perfil
 fotoPerfil.addEventListener("click", () => {
     const mostrar = menuFoto.classList.contains("oculto");
 
@@ -24,7 +21,6 @@ fotoPerfil.addEventListener("click", () => {
     opcionesUsuario.setAttribute("aria-expanded", "false");
 });
 
-// Menú de tres puntos
 opcionesUsuario.addEventListener("click", () => {
     const mostrar = menuPuntos.classList.contains("oculto");
 
@@ -36,7 +32,6 @@ opcionesUsuario.addEventListener("click", () => {
     fotoPerfil.setAttribute("aria-expanded", "false");
 });
 
-// Ver foto del perfil
 document.getElementById("verFoto").addEventListener("click", () => {
     const imagen = fotoPerfil.querySelector("img");
 
@@ -50,14 +45,12 @@ document.getElementById("verFoto").addEventListener("click", () => {
     fotoPerfil.setAttribute("aria-expanded", "false");
 });
 
-// Elegir una nueva foto
 document.getElementById("elegirFoto").addEventListener("click", () => {
     archivoFoto.click();
 });
 
-archivoFoto.addEventListener("change", (evento) => {
+archivoFoto.addEventListener("change", async (evento) => {
     const archivo = evento.target.files[0];
-
     if (!archivo) return;
 
     if (!archivo.type.startsWith("image/")) {
@@ -65,68 +58,72 @@ archivoFoto.addEventListener("change", (evento) => {
         return;
     }
 
-    const url = URL.createObjectURL(archivo);
+    const datos = new FormData();
+    datos.append("accion", "foto");
+    datos.append("foto", archivo);
 
-    fotoPerfil.innerHTML = "";
-
-    const imagen = document.createElement("img");
-    imagen.src = url;
-    imagen.alt = "Foto de perfil";
-
-    fotoPerfil.appendChild(imagen);
+    try {
+        const res = await window.drawuApi("perfil.php", datos);
+        fotoPerfil.innerHTML = "";
+        const imagen = document.createElement("img");
+        imagen.src = res.url;
+        imagen.alt = "Foto de perfil";
+        fotoPerfil.appendChild(imagen);
+    } catch (err) {
+        alert(err.message);
+    }
 
     mostrarMenu(menuFoto, false);
     fotoPerfil.setAttribute("aria-expanded", "false");
 });
 
-// Editar el nombre
-function editarNombre() {
-    const nombreActual =
-        document.getElementById("nombreUsuario").textContent;
-
-    const nuevoNombre = prompt(
-        "Escribe el nombre de usuario:",
-        nombreActual
-    );
+async function editarNombre() {
+    const nombreActual = document.getElementById("nombreUsuario").textContent.trim();
+    const nuevoNombre = prompt("Escribe el nombre de usuario:", nombreActual);
 
     if (nuevoNombre && nuevoNombre.trim()) {
-        const nombre = nuevoNombre.trim();
-
-        document.getElementById("nombreUsuario").textContent = nombre;
-
-        document.getElementById("nombreHandle").textContent =
-            "@" + nombre.replace(/\s+/g, "").toLowerCase();
+        try {
+            const res = await window.drawuApi("perfil.php", {
+                accion: "nombre",
+                nombre_usuario: nuevoNombre.trim(),
+            });
+            document.getElementById("nombreUsuario").textContent = res.nombre_usuario;
+            document.getElementById("nombreHandle").textContent = "@" + res.nombre_usuario.toLowerCase();
+            document.querySelectorAll(".autor-publicacion").forEach((el) => {
+                el.textContent = res.nombre_usuario;
+            });
+        } catch (err) {
+            alert(err.message);
+        }
     }
 }
 
-// Editar la descripción
-function editarDescripcion() {
+async function editarDescripcion() {
     const descripcion = document.getElementById("descripcionPerfil");
-
+    const actual = descripcion.textContent.trim();
     const nuevaDescripcion = prompt(
         "Escribe una breve descripción:",
-        descripcion.textContent
+        actual === "Sin descripción" ? "" : actual
     );
 
     if (nuevaDescripcion !== null) {
-        descripcion.textContent =
-            nuevaDescripcion.trim() || "Sin descripción";
+        try {
+            const res = await window.drawuApi("perfil.php", {
+                accion: "descripcion",
+                descripcion: nuevaDescripcion.trim(),
+            });
+            descripcion.textContent = res.descripcion || "Sin descripción";
+        } catch (err) {
+            alert(err.message);
+        }
     }
 }
 
-document.getElementById("editarNombre")
-    .addEventListener("click", editarNombre);
+document.getElementById("editarNombre").addEventListener("click", editarNombre);
+document.getElementById("puntosEditarNombre").addEventListener("click", editarNombre);
+document.getElementById("editarDescripcion").addEventListener("click", editarDescripcion);
+document.getElementById("puntosEditarDescripcion").addEventListener("click", editarDescripcion);
 
-document.getElementById("puntosEditarNombre")
-    .addEventListener("click", editarNombre);
-
-document.getElementById("editarDescripcion")
-    .addEventListener("click", editarDescripcion);
-
-document.getElementById("puntosEditarDescripcion")
-    .addEventListener("click", editarDescripcion);
-
-// Cerrar los menús al hacer clic fuera de ellos
 document.addEventListener("click", (evento) => {
     if (
         !evento.target.closest(".menu-foto") &&
@@ -153,26 +150,18 @@ function comunidadesVisibles() {
 }
 
 function indiceMaximo() {
-    return Math.max(
-        0,
-        pista.children.length - comunidadesVisibles()
-    );
+    return Math.max(0, pista.children.length - comunidadesVisibles());
 }
 
 function moverCarrusel() {
     const primera = pista.querySelector(".comunidad");
-
     if (!primera) return;
 
-    const espacio =
-        parseFloat(getComputedStyle(pista).gap) || 0;
-
+    const espacio = parseFloat(getComputedStyle(pista).gap) || 0;
     const ancho = primera.getBoundingClientRect().width;
 
     indice = Math.max(0, Math.min(indice, indiceMaximo()));
-
-    pista.style.transform =
-        `translateX(-${indice * (ancho + espacio)}px)`;
+    pista.style.transform = `translateX(-${indice * (ancho + espacio)}px)`;
 }
 
 document.getElementById("anterior").addEventListener("click", () => {
@@ -186,8 +175,4 @@ document.getElementById("siguiente").addEventListener("click", () => {
 });
 
 window.addEventListener("resize", moverCarrusel);
-
-// Los enlaces de ejemplo deben apuntar a las páginas reales
-// de las comunidades de tu proyecto.
-
 moverCarrusel();

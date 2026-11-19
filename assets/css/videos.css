@@ -94,3 +94,74 @@
         bottom: 10px;
     }
 }
+
+
+/* ==========================================
+   MODO OSCURO (videos.php)
+========================================== */
+
+body.oscuro {
+    background: #18181b;
+    color: #f1eff7;
+}
+
+body.oscuro .header {
+    background: #242429;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+body.oscuro .header-logo,
+body.oscuro .header-search,
+body.oscuro .header-coins,
+body.oscuro .header-icon {
+    background: #373740;
+    color: #f5f4fa;
+}
+
+body.oscuro .header-search input,
+body.oscuro .header-search button {
+    color: #f5f4fa;
+}
+
+body.oscuro .usuario,
+body.oscuro .usuario a,
+body.oscuro .descripcion,
+body.oscuro .accion {
+    color: #f1eff7;
+}
+
+body.oscuro .avatar {
+    background: #373740;
+    color: #f5f4fa;
+}
+
+body.oscuro .video-shell,
+body.oscuro .video-shell video {
+    background: #29292e;
+    border-color: #44434b;
+}
+
+body.oscuro .placeholder {
+    color: #c5bfce;
+}
+
+body.oscuro .comentarios {
+    background: #272730;
+    color: #faf9ff;
+    border-color: #444;
+}
+
+body.oscuro .cabecera,
+body.oscuro .form-comentario {
+    border-color: #444;
+}
+
+body.oscuro .cerrar {
+    color: #faf9ff;
+}
+
+body.oscuro .form-comentario input {
+    background: #3b3b45;
+    color: #fff;
+    border-color: #666;
+}

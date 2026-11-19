@@ -52,9 +52,22 @@ html.tema-pet-verde {
   transition: background 0.3s ease;
 }
 
+body.oscuro .footer {
+  background: #242429 !important;
+}
+
+body.oscuro {
+  background: #18181b;
+  color: #f1eff7;
+}
+
 .header-coins svg,
 .header-coins {
   color: var(--theme-text-color);
+}
+
+body.oscuro .header-coins {
+  color: #f5f4fa;
 }
 
 /* Fuente Monument para tÃ­tulos */

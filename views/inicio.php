@@ -1,65 +1,14 @@
-
 <?php
+require_once __DIR__ . '/includes/app.php';
 
-$comunidadesInicio = [
-    [
-        'nombre' => 'Boom día, Boomy!',
-        'descripcion' => 'Comparte tus dibujos, personajes e ideas con otros artistas.',
-        'imagen' => '../assets/img/comunidades/boomy_lentes.png',
-        'color' => 'boomy'
-    ],
-    [
-        'nombre' => 'Rediseño de personajes',
-        'descripcion' => 'Comparte rediseños de tus personajes favoritos.',
-        'imagen' => '../assets/img/comunidades/LSS_Lilly.png',
-        'color' => 'redisenos'
-    ],
-    [
-        'nombre' => 'Arte y color',
-        'descripcion' => 'Descubre nuevas técnicas y estilos artísticos.',
-        'imagen' => '../assets/img/comunidades/hermanitos.png',
-        'color' => 'arte'
-    ],
-    [
-        'nombre' => 'Noobs del dibujo',
-        'descripcion' => 'Aprende y mejora junto a otros artistas.',
-        'imagen' => '../assets/img/comunidades/claro_oscuro.png',
-        'color' => 'historias'
-    ]
-];
+$usuario = requerirLogin();
+$yo = (int) $usuario['id_usuario'];
 
-$publicacionesInicio = [
-    [
-        'id' => 1,
-        'usuario' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'descripcion' => ''
-    ],
-    [
-        'id' => 2,
-        'usuario' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'descripcion' => ''
-    ],
-    [
-        'id' => 3,
-        'usuario' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'descripcion' => 'Reviviendo los recuerdos de un lindo Beagle.'
-    ],
-    [
-        'id' => 4,
-        'usuario' => 'Fulanito_detal',
-        'imagen' => '../assets/img/publis/Luke.png',
-        'descripcion' => ''
-    ]
-];
+$comunidadesInicio = obtenerComunidades(['limite' => 8]);
+$publicacionesInicio = obtenerPublicaciones(['tipos' => ['imagen', 'texto', 'aviso']], 25);
 
-function escaparInicio($texto) {
-    return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8');
-}
+$coloresCiclo = ['boomy', 'redisenos', 'arte', 'historias'];
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -69,25 +18,19 @@ function escaparInicio($texto) {
 
     <title>Inicio | DrawU</title>
 
-    
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
 </head>
 
 <body class="drawu-page">
 
-    
     <?php include __DIR__ . '/includes/header/header.php'; ?>
-
-    
     <?php include __DIR__ . '/includes/navbar.php'; ?>
 
-    
     <nav class="drawu-nav-mobile" aria-label="Navegación móvil">
         <a href="inicio.php" aria-current="page">Inicio</a>
         <a href="videos.php">Videos</a>
@@ -115,9 +58,7 @@ function escaparInicio($texto) {
 
         </section>
 
-
         <div class="drawu-home-inner">
-
 
             <section
                 class="drawu-community-section"
@@ -139,7 +80,6 @@ function escaparInicio($texto) {
 
                 </div>
 
-
                 <div class="drawu-carousel-wrap">
 
                     <button
@@ -151,30 +91,30 @@ function escaparInicio($texto) {
                         &#10094;
                     </button>
 
-
                     <div
                         class="drawu-community-track"
                         id="pistaComunidades"
                         tabindex="0"
                     >
 
-                        <?php foreach ($comunidadesInicio as $comunidad): ?>
+                        <?php foreach ($comunidadesInicio as $idx => $comunidad):
+                            $colorCard = $coloresCiclo[$idx % count($coloresCiclo)];
+                            $imgCom = url($comunidad['imagen_perfil'] ?: $comunidad['imagen_banner']);
+                        ?>
 
                             <article
-                                class="drawu-community-card drawu-community-<?=
-                                    escaparInicio($comunidad['color'])
-                                ?>"
+                                class="drawu-community-card drawu-community-<?= e($colorCard) ?>"
                             >
 
                                 <div class="drawu-community-art">
-
-                                    <img
-                                        src="<?= escaparInicio($comunidad['imagen']) ?>"
-                                        alt=""
-                                        loading="lazy"
-                                        data-asset-opcional
-                                    >
-
+                                    <?php if ($imgCom !== ''): ?>
+                                        <img
+                                            src="<?= e($imgCom) ?>"
+                                            alt=""
+                                            loading="lazy"
+                                            data-asset-opcional
+                                        >
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="drawu-community-overlay">
@@ -182,16 +122,16 @@ function escaparInicio($texto) {
                                     <div>
 
                                         <h3>
-                                            <?= escaparInicio($comunidad['nombre']) ?>
+                                            <?= e($comunidad['titulo']) ?>
                                         </h3>
 
                                         <p>
-                                            <?= escaparInicio($comunidad['descripcion']) ?>
+                                            <?= e($comunidad['descripcion'] ?: 'Comunidad artística de DrawU.') ?>
                                         </p>
 
                                     </div>
 
-                                    <a href="comunidad_ind.php">
+                                    <a href="comunidad_ind.php?id=<?= urlencode($comunidad['slug']) ?>">
                                         Ver más
                                     </a>
 
@@ -203,8 +143,6 @@ function escaparInicio($texto) {
 
                     </div>
 
-
-                    
                     <button
                         class="drawu-carousel-arrow"
                         id="comunidadesSiguiente"
@@ -218,93 +156,101 @@ function escaparInicio($texto) {
 
             </section>
 
-
             <section
                 class="drawu-feed"
                 aria-label="Publicaciones de la comunidad"
             >
 
-                <?php foreach ($publicacionesInicio as $publicacion): ?>
+                <?php foreach ($publicacionesInicio as $publicacion):
+                    $esMio = ((int) $publicacion['id_usuario'] === $yo);
+                    $urlPerfil = $esMio ? 'usuario_propio.php' : ('usuario_externo.php?id=' . (int) $publicacion['id_usuario']);
+                    $imgPost = url($publicacion['ruta_imagen']);
+                    $liked = !empty($publicacion['liked']);
+                    $siguiendo = !empty($publicacion['siguiendo']);
+                    $textoPost = trim((string) ($publicacion['titulo'] ? ($publicacion['titulo'] . ': ' . $publicacion['descripcion']) : $publicacion['descripcion']));
+                ?>
 
                     <article
                         class="drawu-post"
-                        data-publicacion="<?= (int)$publicacion['id'] ?>"
+                        data-publicacion="<?= (int) $publicacion['id_publicacion'] ?>"
                     >
 
                         <header class="drawu-post-header">
 
                             <a
-                                href="usuario_externo.php"
+                                href="<?= e($urlPerfil) ?>"
                                 class="drawu-avatar"
                                 aria-label="Ver perfil"
                             >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    aria-hidden="true"
-                                >
-                                    <circle
-                                        cx="12" cy="8" r="3.2"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                    />
+                                <?php if (!empty($publicacion['imagen_perfil'])): ?>
+                                    <img src="<?= e(url($publicacion['imagen_perfil'])) ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                                <?php else: ?>
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        aria-hidden="true"
+                                    >
+                                        <circle
+                                            cx="12" cy="8" r="3.2"
+                                            stroke="currentColor"
+                                            stroke-width="1.8"
+                                        />
 
-                                    <path
-                                        d="M5.5 20c0-3.6 2.6-5.8 6.5-5.8s6.5 2.2 6.5 5.8"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                        stroke-linecap="round"
-                                    />
-                                </svg>
+                                        <path
+                                            d="M5.5 20c0-3.6 2.6-5.8 6.5-5.8s6.5 2.2 6.5 5.8"
+                                            stroke="currentColor"
+                                            stroke-width="1.8"
+                                            stroke-linecap="round"
+                                        />
+                                    </svg>
+                                <?php endif; ?>
                             </a>
 
                             <a
-                                href="usuario_externo.php"
+                                href="<?= e($urlPerfil) ?>"
                                 class="drawu-post-user"
                             >
-                                <?= escaparInicio($publicacion['usuario']) ?>
+                                <?= e($publicacion['nombre_usuario']) ?>
                             </a>
 
-                            <button
-                                type="button"
-                                class="drawu-follow"
-                                data-follow-user="<?= escaparInicio($publicacion['usuario']) ?>"
-                                aria-pressed="false"
-                            >
-                                Seguir
-                            </button>
+                            <?php if (!$esMio): ?>
+                                <button
+                                    type="button"
+                                    class="drawu-follow<?= $siguiendo ? ' siguiendo' : '' ?>"
+                                    data-user-id="<?= (int) $publicacion['id_usuario'] ?>"
+                                    data-follow-user="<?= e($publicacion['nombre_usuario']) ?>"
+                                    aria-pressed="<?= $siguiendo ? 'true' : 'false' ?>"
+                                >
+                                    <?= $siguiendo ? 'Siguiendo' : 'Seguir' ?>
+                                </button>
+                            <?php endif; ?>
 
                         </header>
 
-
-                        <?php if ($publicacion['descripcion'] !== ''): ?>
-
+                        <?php if ($textoPost !== ''): ?>
                             <p class="drawu-post-caption">
-                                <?= escaparInicio($publicacion['descripcion']) ?>
+                                <?= e($textoPost) ?>
                             </p>
-
                         <?php endif; ?>
 
-
-                        <div class="drawu-post-image">
-
-                            <img
-                                src="<?= escaparInicio($publicacion['imagen']) ?>"
-                                alt="Ilustración de un perro Beagle"
-                                loading="lazy"
-                                data-asset-opcional
-                            >
-
-                        </div>
-
+                        <?php if ($imgPost !== ''): ?>
+                            <div class="drawu-post-image">
+                                <img
+                                    src="<?= e($imgPost) ?>"
+                                    alt="Ilustración de <?= e($publicacion['nombre_usuario']) ?>"
+                                    loading="lazy"
+                                    data-asset-opcional
+                                >
+                            </div>
+                        <?php endif; ?>
 
                         <footer class="drawu-post-actions">
 
                             <button
                                 type="button"
-                                class="drawu-action drawu-like"
+                                class="drawu-action drawu-like<?= $liked ? ' liked' : '' ?>"
                                 aria-label="Dar me gusta"
-                                aria-pressed="false"
+                                aria-pressed="<?= $liked ? 'true' : 'false' ?>"
                             >
 
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -316,10 +262,9 @@ function escaparInicio($texto) {
                                     />
                                 </svg>
 
-                                <span class="drawu-like-count">0</span>
+                                <span class="drawu-like-count"><?= (int) $publicacion['total_likes'] ?></span>
 
                             </button>
-
 
                             <button
                                 type="button"
@@ -342,7 +287,6 @@ function escaparInicio($texto) {
                                 </svg>
 
                             </button>
-
 
                             <button
                                 type="button"
@@ -376,8 +320,6 @@ function escaparInicio($texto) {
         </div>
 
     </main>
-
-
 
     <div
         class="drawu-comments-backdrop"
@@ -444,14 +386,12 @@ function escaparInicio($texto) {
 
     </div>
 
-
     <div
         class="drawu-toast"
         id="drawuAviso"
         role="status"
         aria-live="polite"
     ></div>
-
 
     <!-- Footer existente -->
     <?php include __DIR__ . '/includes/footer.php'; ?>
