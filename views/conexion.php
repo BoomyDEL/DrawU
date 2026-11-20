@@ -24,10 +24,10 @@ function conexion(): PDO
 
     $config = [
         'host' => '127.0.0.1',
-        'port' => PUERTO_MEMO,
+        'port' => PUERTO_DANI,
         'db'   => 'drawu',
         'user' => 'root',
-        'pass' => PASS_MEMO,
+        'pass' => PASS_DANI,
     ];
 
     $local = __DIR__ . '/../config/local.php';
