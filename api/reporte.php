@@ -1,9 +1,6 @@
 
 <?php
-/**
- * POST id_usuario, motivo, detalle?
- * Guarda un reporte de usuario.
- */
+
 
 require_once __DIR__ . '/../views/includes/app.php';
 
