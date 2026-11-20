@@ -128,16 +128,15 @@ function usuarioActual(bool $recargar = false): ?array
 
 function obtenerUsuario(int $idUsuario): ?array
 {
-    $sql = 'SELECT *
-            FROM vista_usuario_completo
-            WHERE id_usuario = ?';
-
-    $consulta = conexion()->prepare($sql);
-
-    $consulta->execute([$idUsuario]);
-
-    return $consulta->fetch() ?: null;
+    $consulta = conexion()->prepare('CALL sp_drawu_obtener_usuario(?)');
+    try {
+        $consulta->execute([$idUsuario]);
+        return $consulta->fetch(PDO::FETCH_ASSOC) ?: null;
+    } finally {
+        $consulta->closeCursor();
+    }
 }
+
 
 
 /**
@@ -434,8 +433,13 @@ function obtenerComunidades(array $opciones = []): array
 
 function obtenerRetoActual(): ?array
 {
-    return conexion()
-        ->query('SELECT * FROM vista_reto_actual')
-        ->fetch() ?: null;
+    
+    $consulta = conexion()->prepare('CALL sp_drawu_obtener_reto_actual()');
+    try {
+        $consulta->execute();
+        return $consulta->fetch(PDO::FETCH_ASSOC) ?: null;
+    } finally {
+        $consulta->closeCursor();
+    }
 }
 
