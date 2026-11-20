@@ -1,30 +1,80 @@
+
 <?php
-/**
- * POST id_publicacion → da o quita "me gusta".
- * Respuesta: { ok, liked, total }
- */
 require_once __DIR__ . '/../views/includes/app.php';
 
+// Obtener usuario y publicación
 $usuario = iniciarApi();
+$idUsuario = (int) $usuario['id_usuario'];
 $idPublicacion = entradaEntero('id_publicacion');
+
 $pdo = conexion();
 
-$existe = $pdo->prepare('SELECT 1 FROM publicaciones WHERE id_publicacion = ?');
-$existe->execute([$idPublicacion]);
-if (!$existe->fetchColumn()) {
-    responderError('La publicación no existe.', 404);
+try {
+    $pdo->beginTransaction();
+
+    // Comprobar que la publicación exista
+    // y bloquearla durante esta operación
+    $existe = $pdo->prepare(
+        'SELECT id_publicacion
+         FROM publicaciones
+         WHERE id_publicacion = ?
+         FOR UPDATE'
+    );
+
+    $existe->execute([$idPublicacion]);
+
+    if (!$existe->fetchColumn()) {
+        $pdo->rollBack();
+        responderError('La publicación no existe.', 404);
+    }
+
+    
+    $borrar = $pdo->prepare(
+        'DELETE FROM likes_publicaciones
+         WHERE id_publicacion = ?
+         AND id_usuario = ?'
+    );
+
+    $borrar->execute([$idPublicacion, $idUsuario]);
+
+    
+    if ($borrar->rowCount() === 0) {
+        $agregar = $pdo->prepare(
+            'INSERT IGNORE INTO likes_publicaciones
+             (id_publicacion, id_usuario)
+             VALUES (?, ?)'
+        );
+
+        $agregar->execute([$idPublicacion, $idUsuario]);
+    }
+
+    // Consultar la VIEW y la FUNCTION
+    $consulta = $pdo->prepare(
+        'SELECT
+            v.total_likes,
+            fn_usuario_dio_like(
+                v.id_publicacion, ?
+            ) AS liked
+         FROM vista_total_likes v
+         WHERE v.id_publicacion = ?'
+    );
+
+    $consulta->execute([$idUsuario, $idPublicacion]);
+
+    $resultado = $consulta->fetch();
+
+    $pdo->commit();
+
+} catch (Throwable $ex) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    throw $ex;
 }
 
-$borrar = $pdo->prepare('DELETE FROM likes_publicaciones WHERE id_publicacion = ? AND id_usuario = ?');
-$borrar->execute([$idPublicacion, $usuario['id_usuario']]);
-$liked = false;
-if ($borrar->rowCount() === 0) {
-    $pdo->prepare('INSERT IGNORE INTO likes_publicaciones (id_publicacion, id_usuario) VALUES (?, ?)')
-        ->execute([$idPublicacion, $usuario['id_usuario']]);
-    $liked = true;
-}
-
-$total = $pdo->prepare('SELECT COUNT(*) FROM likes_publicaciones WHERE id_publicacion = ?');
-$total->execute([$idPublicacion]);
-
-responder(['ok' => true, 'liked' => $liked, 'total' => (int) $total->fetchColumn()]);
+responder([
+    'ok' => true,
+    'liked' => (bool) $resultado['liked'],
+    'total' => (int) $resultado['total_likes']
+]);

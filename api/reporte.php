@@ -1,27 +1,63 @@
+
 <?php
 /**
- * POST id_usuario, motivo, detalle? → guarda un reporte de usuario.
+ * POST id_usuario, motivo, detalle?
+ * Guarda un reporte de usuario.
  */
+
 require_once __DIR__ . '/../views/includes/app.php';
 
+// Obtener usuario conectado
 $usuario = iniciarApi();
+
+$yo = (int) $usuario['id_usuario'];
 $idReportado = entradaEntero('id_usuario');
 $motivo = entradaTexto('motivo');
 $detalle = entradaTexto('detalle', 500);
 
-if (!in_array($motivo, ['spam', 'acoso', 'inapropiado', 'plagio', 'otro'], true)) {
+$pdo = conexion();
+
+// Validar motivo
+if (!in_array(
+    $motivo,
+    ['spam', 'acoso', 'inapropiado', 'plagio', 'otro'],
+    true
+)) {
     responderError('Elige un motivo.');
 }
-if ($idReportado === (int) $usuario['id_usuario']) {
+
+// Evitar reportarse a uno mismo
+if ($idReportado === $yo) {
     responderError('No puedes reportarte a ti mismo.');
 }
-$existe = conexion()->prepare('SELECT 1 FROM usuarios WHERE id_usuario = ?');
-$existe->execute([$idReportado]);
-if (!$existe->fetchColumn()) {
+
+// FUNCTION: comprobar que el usuario existe
+$consulta = $pdo->prepare(
+    'SELECT fn_usuario_existe(?)'
+);
+
+$consulta->execute([$idReportado]);
+
+if (!$consulta->fetchColumn()) {
     responderError('El usuario no existe.', 404);
 }
 
-conexion()->prepare('INSERT INTO reportes (id_reportador, id_reportado, motivo, detalle) VALUES (?, ?, ?, ?)')
-    ->execute([$usuario['id_usuario'], $idReportado, $motivo, $detalle !== '' ? $detalle : null]);
+// Guardar reporte
+$guardar = $pdo->prepare(
+    'INSERT INTO reportes
+     (id_reportador, id_reportado, motivo, detalle)
+     VALUES (?, ?, ?, ?)'
+);
+
+$guardar->execute([
+    $yo,
+    $idReportado,
+    $motivo,
+    $detalle !== '' ? $detalle : null
+]);
+
+// El TRIGGER comprueba automáticamente
+// que el usuario no se reporte a sí mismo.
 
 responder(['ok' => true]);
+
