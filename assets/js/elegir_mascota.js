@@ -42,6 +42,9 @@ applyBtn.addEventListener('click', async () => {
             accion: 'elegir',
             id_mascota: selected.id
         });
+        try {
+            localStorage.setItem('drawu_active_pet', String(selected.id));
+        } catch {}
         window.location.href = 'inicio.php';
     } catch (err) {
         if (statusEl) statusEl.textContent = err.message;

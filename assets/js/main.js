@@ -5,13 +5,29 @@
   "use strict";
 
   function syncGlobalPetTheme() {
-    const temaMascota = window.DRAWU?.temaMascota || "";
+    let temaMascota = window.DRAWU?.temaMascota;
+    if (temaMascota === undefined) {
+      const storedPet = localStorage.getItem("drawu_active_pet");
+      temaMascota = storedPet === "2" ? "tema-pet-aqua" : storedPet === "3" ? "tema-pet-verde" : "";
+    }
     document.body.classList.remove("tema-pet-aqua", "tema-pet-verde");
     document.documentElement.classList.remove("tema-pet-aqua", "tema-pet-verde");
 
     if (temaMascota) {
       document.body.classList.add(temaMascota);
       document.documentElement.classList.add(temaMascota);
+    }
+
+    const bannerPropio = document.querySelector(".banner-propio");
+    if (bannerPropio) {
+      bannerPropio.classList.remove("banner-mascota-morado", "banner-mascota-aqua", "banner-mascota-verde");
+      if (temaMascota === "tema-pet-aqua") {
+        bannerPropio.classList.add("banner-mascota-aqua");
+      } else if (temaMascota === "tema-pet-verde") {
+        bannerPropio.classList.add("banner-mascota-verde");
+      } else {
+        bannerPropio.classList.add("banner-mascota-morado");
+      }
     }
   }
 

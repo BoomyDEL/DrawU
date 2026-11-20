@@ -611,3 +611,54 @@ body.oscuro .comunidad {
     background: #2b2934;
     border-color: #3f3c4c;
 }
+
+
+/* ==========================================
+   COLOR DEL BANNER SEGÚN MASCOTA ELEGIDA
+========================================== */
+
+.banner {
+    transition: background-color 0.3s ease;
+}
+
+.banner h2 {
+    color: #ffffff !important;
+}
+
+/* Perfil propio: adopta el color de la mascota activa del usuario */
+body.tema-pet-aqua {
+    --lila: #5ea8d7;
+    --lila-claro: #a6ece6;
+}
+
+body.tema-pet-verde {
+    --lila: #3fae4f;
+    --lila-claro: #b5e8b0;
+}
+
+.banner-propio.banner-mascota-morado {
+    background: #a891ff;
+}
+
+.banner-propio.banner-mascota-aqua,
+body.tema-pet-aqua .banner-propio {
+    background: #79c3f1;
+}
+
+.banner-propio.banner-mascota-verde,
+body.tema-pet-verde .banner-propio {
+    background: #78cc78;
+}
+
+/* Perfil de otros usuarios: respeta siempre la mascota elegida por ese usuario */
+.banner-externo.banner-mascota-morado {
+    background: #a891ff !important;
+}
+
+.banner-externo.banner-mascota-aqua {
+    background: #79c3f1 !important;
+}
+
+.banner-externo.banner-mascota-verde {
+    background: #78cc78 !important;
+}

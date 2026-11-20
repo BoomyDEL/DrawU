@@ -165,3 +165,41 @@ body.oscuro .form-comentario input {
     color: #fff;
     border-color: #666;
 }
+
+
+/* ==========================================
+   ONDA Y COLORES SEGÚN MASCOTA ACTIVA (videos.php)
+========================================== */
+
+.wave {
+    background-image: var(--theme-wave-img, url("../img/fondos/Vector 1-morado.png"));
+    transition: background-image 0.4s ease;
+}
+
+body.tema-pet-aqua .wave {
+    background-image: url("../img/fondos/Vector 1-aqua.png");
+}
+
+body.tema-pet-verde .wave {
+    background-image: url("../img/fondos/Vector 1-verde.png");
+}
+
+body.tema-pet-aqua .flecha-video,
+body.tema-pet-aqua .seguir,
+body.tema-pet-aqua .form-comentario button {
+    background: var(--sidebar-bg, #79c3f1);
+}
+
+body.tema-pet-aqua .flecha-video:hover:not(:disabled) {
+    background: var(--primary-color, #5ea8d7);
+}
+
+body.tema-pet-verde .flecha-video,
+body.tema-pet-verde .seguir,
+body.tema-pet-verde .form-comentario button {
+    background: var(--sidebar-bg, #78cc78);
+}
+
+body.tema-pet-verde .flecha-video:hover:not(:disabled) {
+    background: var(--primary-color, #3fae4f);
+}

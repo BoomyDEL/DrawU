@@ -65,6 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.DRAWU) {
             window.DRAWU.temaMascota = pet?.globalClass || '';
         }
+        try {
+            localStorage.setItem('drawu_active_pet', String(petId));
+        } catch {}
     }
 
     function triggerBrushAnimation(petId) {

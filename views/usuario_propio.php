@@ -12,6 +12,11 @@ if (empty($misComunidades)) {
 
 $coloresFallback = ['boomy', 'redisenos', 'arte', 'historias'];
 $imgPerfilUrl = url($usuario['imagen_perfil']);
+$colorMascotaPropia = $usuario['mascota_color'] ?: match ((int) ($usuario['id_mascota_activa'] ?? 1)) {
+    2 => 'aqua',
+    3 => 'verde',
+    default => 'morado',
+};
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -36,8 +41,8 @@ $imgPerfilUrl = url($usuario['imagen_perfil']);
     <?php include __DIR__ . '/includes/navbar.php'; ?>
 
     <!-- Banner superior -->
-    <header class="banner">
-        <h2><?= e($usuario['mascota_nombre'] ? ('Estilo activo: ' . $usuario['mascota_nombre']) : 'Banner del personaje elegido') ?></h2>
+    <header class="banner banner-propio banner-mascota-<?= e($colorMascotaPropia) ?>">
+       
 
         <!-- Opciones de la foto de perfil -->
         <div class="menu-foto oculto" id="menuFoto">

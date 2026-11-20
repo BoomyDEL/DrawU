@@ -47,6 +47,11 @@ if (empty($comunidadesExterno)) {
 $coloresFallback = ['boomy', 'redisenos', 'arte', 'historias'];
 $imgPerfilUrl = url($externo['imagen_perfil']);
 $seguidoresCount = (int) $externo['total_seguidores'];
+$colorMascotaExterno = $externo['mascota_color'] ?: match ((int) ($externo['id_mascota_activa'] ?? 1)) {
+    2 => 'aqua',
+    3 => 'verde',
+    default => 'morado',
+};
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -72,8 +77,8 @@ $seguidoresCount = (int) $externo['total_seguidores'];
     <?php include __DIR__ . '/includes/navbar.php'; ?>
 
     <!-- Banner superior -->
-    <header class="banner">
-        <h2><?= e($externo['mascota_nombre'] ? ('Estilo activo: ' . $externo['mascota_nombre']) : 'Banner del personaje elegido') ?></h2>
+    <header class="banner banner-externo banner-mascota-<?= e($colorMascotaExterno) ?>">
+        
     </header>
 
     <!-- Perfil del usuario externo -->

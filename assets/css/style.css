@@ -15,6 +15,7 @@
   --sidebar-bg: #a48aff;
   --footer-bg: #d2c9ff;
   --theme-text-color: #8f79f1;
+  --theme-wave-img: url("../img/fondos/Vector 1-morado.png");
 }
 
 /* Tema Mascota 2: Tommy (Azul / Aqua) */
@@ -27,6 +28,7 @@ html.tema-pet-aqua {
   --sidebar-bg: #79c3f1;
   --footer-bg: #c5e8fa;
   --theme-text-color: #5ea8d7;
+  --theme-wave-img: url("../img/fondos/Vector 1-aqua.png");
 }
 
 /* Tema Mascota 3: Boomy (Verde) */
@@ -39,6 +41,7 @@ html.tema-pet-verde {
   --sidebar-bg: #78cc78;
   --footer-bg: #cdeece;
   --theme-text-color: #3fae4f;
+  --theme-wave-img: url("../img/fondos/Vector 1-verde.png");
 }
 
 /* Adaptación del Sidebar y Footer al tema de mascota */
