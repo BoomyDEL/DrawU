@@ -125,21 +125,20 @@ function usuarioActual(bool $recargar = false): ?array
 }
 
 /** Datos públicos de un usuario + contadores. */
+
 function obtenerUsuario(int $idUsuario): ?array
 {
-    $sql = 'SELECT u.id_usuario, u.primer_nombre, u.primer_apellido, u.nombre_usuario, u.correo,
-                   u.imagen_perfil, u.descripcion_perfil, u.tema, u.drawings, u.id_mascota_activa,
-                   m.nombre AS mascota_nombre, m.ruta_imagen AS mascota_imagen, m.color_tema AS mascota_color,
-                   (SELECT COUNT(*) FROM publicaciones p WHERE p.id_usuario = u.id_usuario) AS total_publicaciones,
-                   (SELECT COUNT(*) FROM seguimientos s WHERE s.id_seguido = u.id_usuario) AS total_seguidores,
-                   (SELECT COUNT(*) FROM seguimientos s2 WHERE s2.id_seguidor = u.id_usuario) AS total_seguidos
-            FROM usuarios u
-            LEFT JOIN mascotas m ON m.id_mascota = u.id_mascota_activa
-            WHERE u.id_usuario = ?';
+    $sql = 'SELECT *
+            FROM vista_usuario_completo
+            WHERE id_usuario = ?';
+
     $consulta = conexion()->prepare($sql);
+
     $consulta->execute([$idUsuario]);
+
     return $consulta->fetch() ?: null;
 }
+
 
 /**
  * Protege una vista: si no hay sesión manda al login; si el usuario aún
@@ -264,70 +263,106 @@ function guardarArchivoSubido(string $campo, string $carpeta, array $tiposPermit
  *   id_comunidad, id_usuario, id_reto, tipos (array), retos_desde (fecha Y-m-d),
  *   solo_con_imagen (bool), orden ('recientes' | 'likes')
  */
+
 function obtenerPublicaciones(array $filtros = [], int $limite = 20): array
 {
     $yo = idUsuarioActual() ?? 0;
-    $donde = [
-        'NOT EXISTS (SELECT 1 FROM bloqueos b WHERE b.id_bloqueador = :yo_b AND b.id_bloqueado = p.id_usuario)',
-        // Publicaciones de comunidades privadas solo para sus miembros
-        "(p.id_comunidad IS NULL OR co.privacidad = 'publica'
-          OR EXISTS (SELECT 1 FROM comunidades_usuarios cu WHERE cu.id_comunidad = p.id_comunidad AND cu.id_usuario = :yo_m))",
-    ];
-    $parametros = [':yo_l' => $yo, ':yo_s' => $yo, ':yo_b' => $yo, ':yo_m' => $yo];
 
-    if (!empty($filtros['id_comunidad'])) {
-        $donde[] = 'p.id_comunidad = :id_comunidad';
-        $parametros[':id_comunidad'] = (int) $filtros['id_comunidad'];
+    // Seguridad: bloqueos y comunidades privadas
+    $donde = [
+        'NOT EXISTS (
+            SELECT 1 FROM bloqueos b
+            WHERE b.id_bloqueador = :yo_b
+            AND b.id_bloqueado = p.id_usuario
+        )',
+
+        "(p.id_comunidad IS NULL
+          OR p.comunidad_privacidad = 'publica'
+          OR EXISTS (
+              SELECT 1 FROM comunidades_usuarios cu
+              WHERE cu.id_comunidad = p.id_comunidad
+              AND cu.id_usuario = :yo_m
+          ))"
+    ];
+
+    $parametros = [
+        ':yo_b' => $yo,
+        ':yo_m' => $yo,
+        ':yo_l' => $yo,
+        ':yo_s' => $yo
+    ];
+
+    // Filtros por ID
+    foreach (['id_comunidad', 'id_usuario', 'id_reto'] as $campo) {
+        if (!empty($filtros[$campo])) {
+            $donde[] = "p.$campo = :$campo";
+            $parametros[":$campo"] = (int) $filtros[$campo];
+        }
     }
-    if (!empty($filtros['id_usuario'])) {
-        $donde[] = 'p.id_usuario = :id_usuario';
-        $parametros[':id_usuario'] = (int) $filtros['id_usuario'];
-    }
-    if (!empty($filtros['id_reto'])) {
-        $donde[] = 'p.id_reto = :id_reto';
-        $parametros[':id_reto'] = (int) $filtros['id_reto'];
-    }
+
+    // Filtro por fecha
     if (!empty($filtros['retos_desde'])) {
-        $donde[] = 'p.id_reto IS NOT NULL AND p.fecha_publicacion >= :retos_desde';
-        $parametros[':retos_desde'] = $filtros['retos_desde'];
+        $donde[] = 'p.id_reto IS NOT NULL
+                    AND p.fecha_publicacion >= :fecha';
+
+        $parametros[':fecha'] = $filtros['retos_desde'];
     }
+
+    // Filtro por imagen
     if (!empty($filtros['solo_con_imagen'])) {
-        $donde[] = "p.ruta_imagen IS NOT NULL AND p.ruta_imagen <> ''";
+        $donde[] = "p.ruta_imagen IS NOT NULL
+                    AND p.ruta_imagen <> ''";
     }
+
+    // Filtro por tipo
     if (!empty($filtros['tipos'])) {
         $marcas = [];
+
         foreach (array_values($filtros['tipos']) as $i => $tipo) {
-            $marcas[] = ':tipo' . $i;
-            $parametros[':tipo' . $i] = $tipo;
+            $clave = ":tipo$i";
+            $marcas[] = $clave;
+            $parametros[$clave] = $tipo;
         }
+
         $donde[] = 'p.tipo IN (' . implode(',', $marcas) . ')';
     }
 
+    // Orden de publicaciones
     $orden = ($filtros['orden'] ?? 'recientes') === 'likes'
-        ? 'total_likes DESC, p.fecha_publicacion DESC'
+        ? 'p.total_likes DESC, p.fecha_publicacion DESC'
         : 'p.fecha_publicacion DESC, p.id_publicacion DESC';
 
-    $sql = 'SELECT p.id_publicacion, p.id_usuario, p.id_comunidad, p.id_reto, p.tipo, p.titulo,
-                   p.descripcion, p.contenido, p.ruta_imagen, p.fecha_publicacion,
-                   u.nombre_usuario, u.imagen_perfil,
-                   co.titulo AS comunidad_titulo, co.slug AS comunidad_slug,
-                   v.ruta_video,
-                   (SELECT COUNT(*) FROM likes_publicaciones l WHERE l.id_publicacion = p.id_publicacion) AS total_likes,
-                   (SELECT COUNT(*) FROM comentarios c WHERE c.id_publicacion = p.id_publicacion) AS total_comentarios,
-                   EXISTS (SELECT 1 FROM likes_publicaciones l2 WHERE l2.id_publicacion = p.id_publicacion AND l2.id_usuario = :yo_l) AS liked,
-                   EXISTS (SELECT 1 FROM seguimientos s WHERE s.id_seguidor = :yo_s AND s.id_seguido = p.id_usuario) AS siguiendo
-            FROM publicaciones p
-            JOIN usuarios u ON u.id_usuario = p.id_usuario
-            LEFT JOIN comunidades co ON co.id_comunidad = p.id_comunidad
-            LEFT JOIN videos v ON v.id_publicacion = p.id_publicacion
-            WHERE ' . implode(' AND ', $donde) . '
-            ORDER BY ' . $orden . '
-            LIMIT ' . max(1, (int) $limite);
+    $limite = max(1, (int) $limite);
+
+    // Consulta principal utilizando la VIEW
+    $sql = "SELECT
+                p.*,
+
+                EXISTS (
+                    SELECT 1 FROM likes_publicaciones l
+                    WHERE l.id_publicacion = p.id_publicacion
+                    AND l.id_usuario = :yo_l
+                ) AS liked,
+
+                EXISTS (
+                    SELECT 1 FROM seguimientos s
+                    WHERE s.id_seguidor = :yo_s
+                    AND s.id_seguido = p.id_usuario
+                ) AS siguiendo
+
+            FROM vista_publicaciones_detalle p
+
+            WHERE " . implode(' AND ', $donde) . "
+
+            ORDER BY $orden
+            LIMIT $limite";
 
     $consulta = conexion()->prepare($sql);
     $consulta->execute($parametros);
+
     return $consulta->fetchAll();
 }
+
 
 /**
  * Comunidades con número de miembros, publicaciones de hoy y si el
@@ -336,45 +371,71 @@ function obtenerPublicaciones(array $filtros = [], int $limite = 20): array
  * Opciones: busqueda (texto), id_miembro (solo comunidades de ese usuario),
  *           limite (int)
  */
+
 function obtenerComunidades(array $opciones = []): array
 {
     $yo = idUsuarioActual() ?? 0;
-    $donde = ['1 = 1'];
+
+    $donde = [];
     $parametros = [':yo' => $yo];
 
+    // Buscar comunidades por nombre o descripción
     if (!empty($opciones['busqueda'])) {
         $donde[] = '(c.titulo LIKE :q1 OR c.descripcion LIKE :q2)';
+
         $parametros[':q1'] = '%' . $opciones['busqueda'] . '%';
         $parametros[':q2'] = '%' . $opciones['busqueda'] . '%';
     }
+
+    // Filtrar comunidades a las que pertenece un usuario
     if (!empty($opciones['id_miembro'])) {
-        $donde[] = 'EXISTS (SELECT 1 FROM comunidades_usuarios m WHERE m.id_comunidad = c.id_comunidad AND m.id_usuario = :id_miembro)';
+        $donde[] = 'EXISTS (
+            SELECT 1 FROM comunidades_usuarios m
+            WHERE m.id_comunidad = c.id_comunidad
+            AND m.id_usuario = :id_miembro
+        )';
+
         $parametros[':id_miembro'] = (int) $opciones['id_miembro'];
     }
 
-    $sql = 'SELECT c.id_comunidad, c.id_creador, c.slug, c.titulo, c.descripcion, c.privacidad,
-                   c.imagen_perfil, c.imagen_banner, c.fecha_creacion,
-                   (SELECT COUNT(*) FROM comunidades_usuarios cu WHERE cu.id_comunidad = c.id_comunidad) AS total_miembros,
-                   (SELECT COUNT(*) FROM publicaciones p WHERE p.id_comunidad = c.id_comunidad
-                        AND p.fecha_publicacion >= CURDATE()) AS publicaciones_hoy,
-                   EXISTS (SELECT 1 FROM comunidades_usuarios cu2 WHERE cu2.id_comunidad = c.id_comunidad AND cu2.id_usuario = :yo) AS es_miembro
-            FROM comunidades c
-            WHERE ' . implode(' AND ', $donde) . '
-            ORDER BY total_miembros DESC, c.fecha_creacion DESC';
+    // Consulta utilizando la VIEW
+    $sql = 'SELECT
+                c.*,
+
+                EXISTS (
+                    SELECT 1 FROM comunidades_usuarios cu
+                    WHERE cu.id_comunidad = c.id_comunidad
+                    AND cu.id_usuario = :yo
+                ) AS es_miembro
+
+            FROM vista_comunidades_detalle c';
+
+    // Agregar filtros cuando existan
+    if (!empty($donde)) {
+        $sql .= ' WHERE ' . implode(' AND ', $donde);
+    }
+
+    // Ordenar por número de miembros
+    $sql .= ' ORDER BY c.total_miembros DESC,
+                      c.fecha_creacion DESC';
+
+    // Limitar resultados
     if (!empty($opciones['limite'])) {
-        $sql .= ' LIMIT ' . (int) $opciones['limite'];
+        $sql .= ' LIMIT ' . max(1, (int) $opciones['limite']);
     }
 
     $consulta = conexion()->prepare($sql);
     $consulta->execute($parametros);
+
     return $consulta->fetchAll();
 }
 
 /** Reto vigente hoy (o el más reciente si no hay uno vigente). */
+
 function obtenerRetoActual(): ?array
 {
-    $sql = 'SELECT * FROM retos_del_dia
-            ORDER BY (CURDATE() BETWEEN fecha_inicio AND fecha_fin) DESC, fecha_inicio DESC
-            LIMIT 1';
-    return conexion()->query($sql)->fetch() ?: null;
+    return conexion()
+        ->query('SELECT * FROM vista_reto_actual')
+        ->fetch() ?: null;
 }
+

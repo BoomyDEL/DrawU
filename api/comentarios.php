@@ -1,38 +1,70 @@
+
 <?php
 /**
- * GET  ?id_publicacion=N            → lista de comentarios
- * POST id_publicacion, contenido    → agrega un comentario y devuelve la lista
- * Respuesta: { ok, comentarios: [{id, usuario, id_usuario, contenido, fecha}], total }
+ * GET: consultar comentarios
+ * POST: agregar comentario
  */
+
 require_once __DIR__ . '/../views/includes/app.php';
 
 $usuario = iniciarApi(false);
 $idPublicacion = entradaEntero('id_publicacion');
 $pdo = conexion();
 
-$existe = $pdo->prepare('SELECT 1 FROM publicaciones WHERE id_publicacion = ?');
+$metodo = $_SERVER['REQUEST_METHOD'];
+
+if (!in_array($metodo, ['GET', 'POST'], true)) {
+    responderError('Método no permitido.', 405);
+}
+
+// FUNCTION: comprobar si existe la publicación
+$existe = $pdo->prepare(
+    'SELECT fn_publicacion_existe(?)'
+);
+
 $existe->execute([$idPublicacion]);
+
 if (!$existe->fetchColumn()) {
     responderError('La publicación no existe.', 404);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Guardar comentario si es POST
+if ($metodo === 'POST') {
+
     $contenido = entradaTexto('contenido', 500);
+
     if ($contenido === '') {
         responderError('Escribe un comentario.');
     }
-    $pdo->prepare('INSERT INTO comentarios (id_publicacion, id_usuario, contenido) VALUES (?, ?, ?)')
-        ->execute([$idPublicacion, $usuario['id_usuario'], $contenido]);
+
+    $guardar = $pdo->prepare(
+        'INSERT INTO comentarios
+         (id_publicacion, id_usuario, contenido)
+         VALUES (?, ?, ?)'
+    );
+
+    $guardar->execute([
+        $idPublicacion,
+        $usuario['id_usuario'],
+        $contenido
+    ]);
 }
 
+// VIEW: consultar comentarios
 $consulta = $pdo->prepare(
-    'SELECT c.id_comentario AS id, c.id_usuario, u.nombre_usuario AS usuario, c.contenido, c.fecha_comentario AS fecha
-     FROM comentarios c
-     JOIN usuarios u ON u.id_usuario = c.id_usuario
-     WHERE c.id_publicacion = ?
-     ORDER BY c.fecha_comentario ASC, c.id_comentario ASC'
+    'SELECT id, id_usuario, usuario, contenido, fecha
+     FROM vista_comentarios_detalle
+     WHERE id_publicacion = ?
+     ORDER BY fecha ASC, id ASC'
 );
+
 $consulta->execute([$idPublicacion]);
+
 $comentarios = $consulta->fetchAll();
 
-responder(['ok' => true, 'comentarios' => $comentarios, 'total' => count($comentarios)]);
+// Responder a JavaScript
+responder([
+    'ok' => true,
+    'comentarios' => $comentarios,
+    'total' => count($comentarios)
+]);

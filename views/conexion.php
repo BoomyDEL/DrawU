@@ -10,6 +10,11 @@
  *           'user' => 'root', 'pass' => 'tu_contraseña'];
  */
 
+define('PUERTO_DANI', 3306);
+define('PUERTO_MEMO', 3307);
+define('PASS_DANI', 'dannifer2018');
+define('PASS_MEMO', '');
+
 function conexion(): PDO
 {
     static $pdo = null;
@@ -19,10 +24,10 @@ function conexion(): PDO
 
     $config = [
         'host' => '127.0.0.1',
-        'port' => 3306,
+        'port' => PUERTO_MEMO,
         'db'   => 'drawu',
         'user' => 'root',
-        'pass' => 'dannifer2018',
+        'pass' => PASS_MEMO,
     ];
 
     $local = __DIR__ . '/../config/local.php';
