@@ -1,8 +1,15 @@
 <?php
 require_once __DIR__ . '/includes/app.php';
 
-if (usuarioActual()) {
-    header('Location: inicio.php');
+// Si ya hay una sesión, enviar a cada persona a su página correspondiente.
+$actual = usuarioActual();
+if ($actual !== null) {
+    // usuarioActual() ya obtiene es_admin desde un PROCEDURE.
+    if ((int) ($actual['es_admin'] ?? 0) === 1) {
+        header('Location: admin_reportes.php');
+    } else {
+        header('Location: inicio.php');
+    }
     exit;
 }
 
@@ -14,20 +21,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = (string) ($_POST['contrasena'] ?? '');
 
     if ($correoPrevio === '' || $contrasena === '') {
-        $error = 'Por favor ingresa tu correo y contraseña.';
+        $error = 'Por favor ingresa tu correo/usuario y contraseña.';
     } else {
         try {
-            $stmt = conexion()->prepare('SELECT id_usuario, contrasena_hash, id_mascota_activa FROM usuarios WHERE correo = ? LIMIT 1');
-            $stmt->execute([$correoPrevio]);
-            $usuario = $stmt->fetch();
+            // Acepta correo electrónico para todos y nombre de usuario (ej. admin).
+            $stmt = conexion()->prepare('CALL sp_drawu_autenticacion(?)');
+            try {
+                $stmt->execute([$correoPrevio]);
+                $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            } finally {
+                $stmt->closeCursor();
+            }
 
-            if ($usuario && password_verify($contrasena, $usuario['contrasena_hash'])) {
+            // El usuario debe estar activo y la clave se comprueba con su hash.
+            if ($usuario && (int) $usuario['activo'] === 1
+                && password_verify($contrasena, $usuario['contrasena_hash'])) {
                 iniciarSesionUsuario((int) $usuario['id_usuario']);
-                $destino = empty($usuario['id_mascota_activa']) ? 'elegir_mascota.php' : 'inicio.php';
+
+                if ((bool) $usuario['es_admin']) {
+                    $destino = 'admin_reportes.php';
+                } else {
+                    $destino = empty($usuario['id_mascota_activa'])
+                        ? 'elegir_mascota.php'
+                        : 'inicio.php';
+                }
+
                 header('Location: ' . $destino);
                 exit;
             } else {
-                $error = 'Correo o contraseña incorrectos. Inténtalo de nuevo.';
+                $error = 'Usuario/correo o contraseña incorrectos. Inténtalo de nuevo.';
             }
         } catch (Throwable $ex) {
             error_log('[DrawU Login] ' . $ex->getMessage());
@@ -65,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form id="formRegistro" action="pagina_login.php" method="POST">
                 <label class="campo">
                     <svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"></rect><path d="m3.5 6 8.5 6.5L20.5 6"></path></svg>
-                    <input type="email" name="email" placeholder="E-mail" autocomplete="email" value="<?= e($correoPrevio) ?>" required>
+                    <input type="text" name="email" placeholder="Correo electrónico o usuario" autocomplete="username" value="<?= e($correoPrevio) ?>" required>
                 </label>
                 <label class="campo">
                     <svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="5"></circle><path d="m11.5 11.5 8-8 2 2-2.5 2.5 1.5 1.5-2.5 2.5-1.5-1.5"></path></svg>
@@ -74,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button class="boton" type="submit">Iniciar sesión</button>
             </form>
-            <p class="mensaje" id="mensaje" role="alert" style="<?= $error !== '' ? 'display:block;' : '' ?>"><?= e($error ?: 'Correo o contraseña incorrectos.') ?></p>
+            <p class="mensaje" id="mensaje" role="alert" style="<?= $error !== '' ? 'display:block;' : '' ?>"><?= e($error ?: 'Usuario/correo o contraseña incorrectos.') ?></p>
             <p class="cuenta"><a href="pagina_registro.php">¿Deseas crear una cuenta?</a></p>
         </section>
     </main>
